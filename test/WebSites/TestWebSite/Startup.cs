@@ -35,7 +35,6 @@ namespace TestWebSite
                     }
                     else
                     {
-                        byte[] message = Encoding.UTF8.GetBytes("hello");
                         var socket = await context.WebSockets.AcceptWebSocketAsync();
                         while (true)
                         {
