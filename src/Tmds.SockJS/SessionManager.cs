@@ -64,12 +64,14 @@ namespace Tmds.SockJS
         private readonly List<Route> _routes;
         private readonly PathString _prefix;
         private readonly ConcurrentDictionary<string, Session> _sessions = new ConcurrentDictionary<string, Session>();
+        private readonly PathString _rewritePath;
 
         public SessionManager(PathString prefix, RequestDelegate next, SockJSOptions options)
         {
             _prefix = prefix;
             _next = next;
             _options = options;
+            _rewritePath = options.RewritePath != PathString.Empty ? options.RewritePath : _prefix;
 
             _iframeContent = string.Format(IFrameTemplate, options.JSClientLibraryUrl);
             _iframeETag = CalculateETag(_iframeContent);
@@ -121,14 +123,14 @@ namespace Tmds.SockJS
                 return ExposeText(context, "Not a valid websocket request");
             }
             var feature = new SockJSWebSocketFeature(context.GetFeature<IHttpWebSocketFeature>());
-            context.Request.Path = _prefix;
+            context.Request.Path = _rewritePath;
 
             throw new NotImplementedException();
         }
 
         private Task HandleWebSocket(HttpContext context, string sessionId)
         {
-            context.Request.Path = _prefix;
+            context.Request.Path = _rewritePath;
             return _next(context);
         }
 
@@ -278,7 +280,7 @@ namespace Tmds.SockJS
                 {
                     var feature = new SessionWebSocketFeature(session);
                     receiver.Context.SetFeature<IHttpWebSocketFeature>(feature);
-                    receiver.Context.Request.Path = _prefix;
+                    receiver.Context.Request.Path = _rewritePath;
 
                     var pipeline = _next(receiver.Context);
 
