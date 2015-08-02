@@ -22,7 +22,7 @@ namespace Tmds.SockJS.Tests
         private async Task Verify(string sessionPart)
         {
             var client = CreateClient();
-            var response = await client.PostAsync(BaseUrl + sessionPart + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(BaseUrl + sessionPart + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             Assert.Equal("o\n", content);
@@ -38,7 +38,7 @@ namespace Tmds.SockJS.Tests
                 var response = await client.GetAsync(BaseUrl + suffix + "/xhr");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
-                response = await client.PostAsync(BaseUrl + suffix + "/xhr", new ByteArrayContent(new byte[] { }));
+                response = await client.PostAsync(BaseUrl + suffix + "/xhr", null);
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
@@ -49,7 +49,7 @@ namespace Tmds.SockJS.Tests
             string sessionId = Guid.NewGuid().ToString();
             var client = CreateClient();
 
-            var response = await client.PostAsync(BaseUrl + "/000/" + sessionId + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(BaseUrl + "/000/" + sessionId + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             Assert.Equal("o\n", content);
@@ -61,7 +61,7 @@ namespace Tmds.SockJS.Tests
             content = await response.Content.ReadAsStringAsync();
             Assert.Equal(string.Empty, content);
 
-            response = await client.PostAsync(BaseUrl + "/999/" + sessionId + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(BaseUrl + "/999/" + sessionId + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             content = await response.Content.ReadAsStringAsync();
             Assert.Equal("a[\"a\"]\n", content);

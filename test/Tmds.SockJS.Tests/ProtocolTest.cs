@@ -16,7 +16,7 @@ namespace Tmds.SockJS.Tests
 
             var client = CreateClient();
 
-            var response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(sessionUrl + "/xhr", null);
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("o\n", responseContent);
@@ -27,7 +27,7 @@ namespace Tmds.SockJS.Tests
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
             Assert.Equal(string.Empty, responseContent);
 
-            response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(sessionUrl + "/xhr", null);
             responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("a[\"a\"]\n", responseContent);
@@ -36,8 +36,8 @@ namespace Tmds.SockJS.Tests
             response = await client.PostAsync(BaseUrl + "/000/bad_session/xhr_send", requestContent);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
-            Task t = client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
-            response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            Task t = client.PostAsync(sessionUrl + "/xhr", null);
+            response = await client.PostAsync(sessionUrl + "/xhr", null);
             responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("c[2010,\"Another connection still open\"]\n", responseContent);
@@ -49,23 +49,23 @@ namespace Tmds.SockJS.Tests
             var client = CreateClient();
             string sessionUrl = CloseBaseUrl + "/000/" + Guid.NewGuid().ToString();
 
-            var response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(sessionUrl + "/xhr", null);
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("o\n", responseContent);
 
-            response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(sessionUrl + "/xhr", null);
             responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("c[3000,\"Go away!\"]\n", responseContent);
 
-            response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(sessionUrl + "/xhr", null);
             responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("c[3000,\"Go away!\"]\n", responseContent);
 
             await Task.Delay(TimeSpan.FromSeconds(3));
-            response = await client.PostAsync(sessionUrl + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(sessionUrl + "/xhr", null);
             responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("o\n", responseContent);

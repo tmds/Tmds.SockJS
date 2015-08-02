@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Cors.Core;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -27,7 +28,7 @@ namespace Tmds.SockJS.Tests
             var client = CreateClient();
             var url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
 
-            var response = await client.PostAsync(url + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(url + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             Assert.Equal("o\n", content);
@@ -43,7 +44,7 @@ namespace Tmds.SockJS.Tests
             Assert.Equal("text/plain", response.Content.Headers.ContentType.MediaType);
             AssertCors(response, null);
 
-            response = await client.PostAsync(url + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(url + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             content = await response.Content.ReadAsStringAsync();
             Assert.Equal("a[\"x\"]\n", content);
@@ -65,7 +66,7 @@ namespace Tmds.SockJS.Tests
             var client = CreateClient();
             var url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
 
-            var response = await client.PostAsync(url + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(url + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             Assert.Equal("o\n", content);
@@ -85,7 +86,7 @@ namespace Tmds.SockJS.Tests
             content = await response.Content.ReadAsStringAsync();
             Assert.Equal(string.Empty, content);
 
-            response = await client.PostAsync(url + "/xhr", new ByteArrayContent(new byte[] { }));
+            response = await client.PostAsync(url + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             content = await response.Content.ReadAsStringAsync();
             Assert.Equal("a[\"a\"]\n", content);
@@ -97,7 +98,7 @@ namespace Tmds.SockJS.Tests
             var client = CreateClient();
             var url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
 
-            var response = await client.PostAsync(url + "/xhr", new ByteArrayContent(new byte[] { }));
+            var response = await client.PostAsync(url + "/xhr", null);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
             Assert.Equal("o\n", content);
@@ -120,7 +121,7 @@ namespace Tmds.SockJS.Tests
             var client = CreateClient();
 
             var url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
-            var requestContent = new ByteArrayContent(new byte[] { });
+            var requestContent = new StreamContent(Stream.Null);
             requestContent.Headers.Add(CorsConstants.AccessControlRequestHeaders, "a, b, c");
             var response = await client.PostAsync(url + "/xhr", requestContent);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -128,7 +129,7 @@ namespace Tmds.SockJS.Tests
             Assert.True(response.Headers.GetValues(CorsConstants.AccessControlAllowHeaders).Contains("a, b, c"));
 
             url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
-            requestContent = new ByteArrayContent(new byte[] { });
+            requestContent = new StreamContent(Stream.Null); ;
             requestContent.Headers.Add(CorsConstants.AccessControlRequestHeaders, "");
             response = await client.PostAsync(url + "/xhr", requestContent);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -137,7 +138,7 @@ namespace Tmds.SockJS.Tests
             Assert.False(response.Headers.TryGetValues(CorsConstants.AccessControlAllowHeaders, out values));
 
             url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
-            requestContent = new ByteArrayContent(new byte[] { });
+            requestContent = new StreamContent(Stream.Null); ;
             response = await client.PostAsync(url + "/xhr", requestContent);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             AssertCors(response, null);
