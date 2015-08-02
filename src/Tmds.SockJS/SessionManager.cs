@@ -80,7 +80,6 @@ namespace Tmds.SockJS
                 new Route("GET", "^/iframe[0-9-.a-z_]*.html[/]?$", HandleIFrame),
                 new Route("GET", "^/info[/]?$", HandleInfo),
                 new Route("OPTIONS", "^/info[/]?$", HandleOptionsGetResource),
-                new Route("GET", "^/websocket[/]?$", HandleWebSocket),
                 new Route("GET", "^/([^/.]+)/([^/.]+)/jsonp[/]?$", HandleJsonp),
                 new Route("POST", "^/([^/.]+)/([^/.]+)/jsonp_send[/]?$", HandleJsonpSend),
                 new Route("POST", "^/([^/.]+)/([^/.]+)/xhr[/]?$", HandleXhr),
@@ -94,17 +93,21 @@ namespace Tmds.SockJS
             });
             if (_options.UseWebSocket)
             {
-                _routes.Add(
-                    new Route("GET", "^/([^/.]+)/([^/.]+)/websocket[/]?$", HandleSockJSWebSocket));
+                _routes.AddRange(new[] {
+                    new Route("GET", "^/([^/.]+)/([^/.]+)/websocket[/]?$", HandleSockJSWebSocket),
+                    new Route("GET", "^/websocket[/]?$", HandleWebSocket),
+                });
             }
             else
             {
-                _routes.Add(
-                       new Route("GET", "^/([^/.]+)/([^/.]+)/websocket[/]?$", HandleNoSockJSWebSocket));
+                _routes.AddRange(new[] {
+                    new Route("GET", "^/([^/.]+)/([^/.]+)/websocket[/]?$", HandleNoWebSocket),
+                    new Route("GET", "^/websocket[/]?$", HandleNoWebSocket),
+                });
             }
         }
 
-        private Task HandleNoSockJSWebSocket(HttpContext context, string sessionId)
+        private Task HandleNoWebSocket(HttpContext context, string sessionId)
         {
             AddCachingHeader(context);
             return HandleNotFound(context);
