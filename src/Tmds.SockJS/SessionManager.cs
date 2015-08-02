@@ -71,7 +71,7 @@ namespace Tmds.SockJS
             _prefix = prefix;
             _next = next;
             _options = options;
-            _rewritePath = options.RewritePath != PathString.Empty ? options.RewritePath : _prefix;
+            _rewritePath = options.RewritePath.HasValue ? options.RewritePath : _prefix;
 
             _iframeContent = string.Format(IFrameTemplate, options.JSClientLibraryUrl);
             _iframeETag = CalculateETag(_iframeContent);
