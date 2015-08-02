@@ -64,7 +64,8 @@ namespace Tmds.SockJS.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal("c[3000,\"Go away!\"]\n", responseContent);
 
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            // wait for the session to time out
+            await Task.Delay(TestWebSite.Startup.CloseDisconnectTimeout + TimeSpan.FromSeconds(2));
             response = await client.PostAsync(sessionUrl + "/xhr", null);
             responseContent = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
