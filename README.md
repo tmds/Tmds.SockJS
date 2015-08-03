@@ -1,5 +1,5 @@
 # Tmds.SockJS
-Tmds.SockJS is a ASP.NET 5 server implementation of the SockJS Protocol. The library maintains the standard ASP.NET Websocket interface even when websockets are emulated.
+Tmds.SockJS is an ASP.NET 5 implementation of the SockJS protocol. The library maintains the standard ASP.NET WebSocket interface even when websockets are emulated.
 
 ## Example
 

@@ -6,10 +6,11 @@
   },
   "description": "WebSocket Extensions",
   "authors": [ "Tom Deseyn" ],
-
+  "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
+  "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
+  "summary": "WebSocket extention methods",
   "dependencies": {
   },
-
   "frameworks" : {
     "dnx451": { },
     "dnxcore50" : {
@@ -19,7 +20,8 @@
         "System.Linq": "4.0.0-beta-*",
         "System.Net.WebSockets": "4.0.0-beta-*",
         "System.Threading": "4.0.10-beta-*",
-        "System.IO": "4.0.10-beta-*"
+        "System.IO": "4.0.10-beta-*",
+        "System.Runtime": "4.0.20-beta-*"
       }
     }
   }
