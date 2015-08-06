@@ -20,7 +20,7 @@ namespace TestWebSite
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseSockJS("/echo", new SockJSOptions() { MaxResponseLength = 4200 });
+            app.UseSockJS("/echo", new SockJSOptions() { MaxResponseLength = 4096 });
             app.UseSockJS("/disabled_websocket_echo", new SockJSOptions() { UseWebSocket = false });
             app.UseSockJS("/close", new SockJSOptions() { HeartbeatInterval = TimeSpan.FromSeconds(10), DisconnectTimeout = CloseDisconnectTimeout });
 

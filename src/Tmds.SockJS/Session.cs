@@ -32,8 +32,8 @@ namespace Tmds.SockJS
 
         static Session()
         {
-            DisposeCloseBuffer = Receiver.CloseBuffer(WebSocketCloseStatus.EndpointUnavailable, "Going Away");
-            SendErrorCloseBuffer = Receiver.CloseBuffer(WebSocketCloseStatus.ProtocolError, "Connection interrupted");
+            DisposeCloseBuffer = MessageWriter.CreateCloseBuffer(WebSocketCloseStatus.EndpointUnavailable, "Going Away");
+            SendErrorCloseBuffer = MessageWriter.CreateCloseBuffer(WebSocketCloseStatus.ProtocolError, "Connection interrupted");
             CloseNotSentPendingReceive = new PendingReceive(WebSocketCloseStatus.EndpointUnavailable, "Going Away");
             CloseSentPendingReceive = new PendingReceive(WebSocketCloseStatus.NormalClosure, "Normal Closure");
         }
@@ -100,7 +100,7 @@ namespace Tmds.SockJS
                 {
                     if (_closeMessage != null)
                     {
-                        await _receiver.Send(true, _closeMessage, CancellationToken.None);
+                        await _receiver.SendCloseAsync(_closeMessage, CancellationToken.None);
                         return;
                     }
 
@@ -130,7 +130,7 @@ namespace Tmds.SockJS
                                 Array.Copy(firstSend.Buffer.Array, firstSend.Buffer.Offset, closeMessage, 0, firstSend.Buffer.Count);
                                 Interlocked.CompareExchange(ref _closeMessage, closeMessage, null);
                             }
-                            await _receiver.Send(true, _closeMessage, CancellationToken.None);
+                            await _receiver.SendCloseAsync(_closeMessage, CancellationToken.None);
                             return;
                         }
                         else // WebSocketMessageType.Text
@@ -407,7 +407,7 @@ namespace Tmds.SockJS
 
         public Task SendCloseToClientAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
-            return ServerSendMessageAsync(WebSocketMessageType.Close, new ArraySegment<byte>(Receiver.CloseBuffer(closeStatus, statusDescription)), cancellationToken);
+            return ServerSendMessageAsync(WebSocketMessageType.Close, new ArraySegment<byte>(MessageWriter.CreateCloseBuffer(closeStatus, statusDescription)), cancellationToken);
         }
 
         private async Task ServerSendMessageAsync(WebSocketMessageType type, ArraySegment<byte> buffer, CancellationToken cancellationToken)

@@ -3,14 +3,13 @@
   "description": "Tests for Tmds.SockJS",
   "authors": [ "Tom Deseyn" ],
   "dependencies": {
-    "xunit.runner.dnx": "2.1.0-*",
-    "xunit": "2.1.0-*",
+    "xunit.runner.aspnet": "2.0.0-aspnet-beta6",
     "Microsoft.AspNet.TestHost": "1.0.0-beta6",
     "TestWebSite": "1.0.0-*",
     "Microsoft.AspNet.Mvc.Core": "6.0.0-beta6"
   },
   "commands": {
-    "test": "xunit.runner.dnx"
+    "test": "xunit.runner.aspnet"
   },
   "frameworks": {
     "dnx451": { }

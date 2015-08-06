@@ -16,6 +16,7 @@ using Microsoft.AspNet.Http.Features;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Tmds.SockJS
 {
@@ -34,6 +35,7 @@ namespace Tmds.SockJS
         private static readonly string[] OptionsGetAllowedMethods = new[] { "OPTIONS, GET" };
         private static readonly Random _random = new Random();
         private static readonly char[] ContentTypeSplitter = new[] { ';' };
+        private static readonly Regex _htmlFileCallbackRegex;
 
         static SessionManager()
         {
@@ -54,8 +56,9 @@ namespace Tmds.SockJS
   <p>This is a SockJS hidden iframe.It's used for cross domain magic.</p>
 </body>
 </html>".Replace("\r\n", "\n").Trim();
-            OtherReceiverCloseMessage = Receiver.CloseBuffer((WebSocketCloseStatus)2010, "Another connection still open");
+            OtherReceiverCloseMessage = MessageWriter.CreateCloseBuffer((WebSocketCloseStatus)2010, "Another connection still open");
             AllowedXhrSendMediaTypes = new[] { "text/plain", "T", "application/json", "application/xml", "", "text/xml" };
+            _htmlFileCallbackRegex = new Regex("[^a-zA-Z0-9-_.]");
         }
         private readonly RequestDelegate _next;
         private readonly SockJSOptions _options;
@@ -151,7 +154,27 @@ namespace Tmds.SockJS
 
         private Task HandleHtmlFile(HttpContext context, string sessionId)
         {
-            throw new NotImplementedException();
+            AddSessionCookie(context);
+            AddNoCacheHeader(context);
+            AddCorsHeader(context);
+
+            var query = context.Request.Query;
+
+            var htmlFileCallback = query.Get("c") ?? query.Get("callback");
+
+            if (htmlFileCallback == null)
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return context.Response.WriteAsync("\"callback\" parameter required");
+            }
+            if (_htmlFileCallbackRegex.IsMatch(htmlFileCallback))
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return context.Response.WriteAsync("invalid \"callback\" parameter");
+            }
+
+            var receiver = new Receiver(context, ReceiverType.HtmlFile, _options.MaxResponseLength, htmlFileCallback);
+            return HandleReceiver(sessionId, receiver);
         }
 
         private async Task HandleXhrSend(HttpContext context, string sessionId)
@@ -200,7 +223,7 @@ namespace Tmds.SockJS
             AddNoCacheHeader(context);
             AddCorsHeader(context);
 
-            var receiver = new Receiver(context, false, _options.MaxResponseLength);
+            var receiver = new Receiver(context, ReceiverType.XhrStreaming, _options.MaxResponseLength, null);
             return HandleReceiver(sessionId, receiver);
         }
         
@@ -210,7 +233,7 @@ namespace Tmds.SockJS
             AddNoCacheHeader(context);
             AddCorsHeader(context);
 
-            var receiver = new Receiver(context, true, _options.MaxResponseLength);
+            var receiver = new Receiver(context, ReceiverType.XhrPolling, _options.MaxResponseLength, null);
             return HandleReceiver(sessionId, receiver);
         }
 
@@ -305,7 +328,7 @@ namespace Tmds.SockJS
                 if (!receiverSet)
                 {
                     await receiver.Open();
-                    await receiver.Send(true, OtherReceiverCloseMessage, CancellationToken.None);
+                    await receiver.SendCloseAsync(OtherReceiverCloseMessage, CancellationToken.None);
                     return;
                 }
             }

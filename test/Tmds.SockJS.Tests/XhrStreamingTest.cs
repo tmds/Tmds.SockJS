@@ -43,7 +43,8 @@ namespace Tmds.SockJS.Tests
             var message = await reader.ReadLineAsync();
             Assert.Equal("a[\"x\"]", message);
 
-            client.Dispose();}
+            client.Dispose();
+        }
 
         [Fact]
         public async Task ResponseLimit()
@@ -55,7 +56,8 @@ namespace Tmds.SockJS.Tests
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
             string msg = "\"" + new string('x', 128) + "\"";
-            for (int i = 0; i < 32; i++)
+            int nrOfMessages = 31;
+            for (int i = 0; i < nrOfMessages; i++)
             {
                 var sendResponse = await client.PostAsync(url + "/xhr_send", new StringContent("[" + msg + "]", Encoding.UTF8, "application/json"));
                 Assert.Equal(HttpStatusCode.NoContent, sendResponse.StatusCode);
@@ -69,7 +71,7 @@ namespace Tmds.SockJS.Tests
             Assert.Equal(new string('h', 2048), prelude);
             Assert.Equal("o", open);
             var remaining = await reader.ReadToEndAsync();
-            Assert.Equal(string.Concat(Enumerable.Repeat("a[" + msg + "]\n", 32)), remaining);
+            Assert.Equal(string.Concat(Enumerable.Repeat("a[" + msg + "]\n", nrOfMessages)), remaining);
         }
     }
 }

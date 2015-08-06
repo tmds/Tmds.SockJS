@@ -85,7 +85,7 @@ namespace Tmds.SockJS
 
         private async Task SendCloseBuffer(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
-            var buffer = Receiver.CloseBuffer(closeStatus, statusDescription);
+            var buffer = MessageWriter.CreateCloseBuffer(closeStatus, statusDescription);
             await _webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length - NewLine), WebSocketMessageType.Text, true, cancellationToken);
         }
 
@@ -144,9 +144,8 @@ namespace Tmds.SockJS
                 throw new NotSupportedException("SockJS: Only complete text messages are supported");
             }
 
-            var writer = new PendingSendsWriter();
-            writer.WriteMessages(new[] { new PendingSend(null, messageType, buffer, cancellationToken) });
-            var sendBuffer = new ArraySegment<byte>(writer.Buffer.Array, writer.Buffer.Offset, writer.Buffer.Count - NewLine);
+            var sendBuffer = MessageWriter.CreateSockJSWebSocketSendMessage(buffer);
+
             return _webSocket.SendAsync(sendBuffer, messageType, endOfMessage, cancellationToken);
         }
     }

@@ -1,3 +1,6 @@
-﻿{
-  "projects": [ "src", "test", "test/WebSites" ]
+{
+    "projects": [ "src", "test", "test/WebSites" ],
+    "sdk": {
+        "version": "1.0.0-beta6"
+    }
 }
