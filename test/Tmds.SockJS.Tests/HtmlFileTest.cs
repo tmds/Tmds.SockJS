@@ -30,7 +30,7 @@ namespace Tmds.SockJS.Tests
     function p(d) {{c.message(d);}};
     window.onload = function() {{c.stop();}};
   </script>
-".Replace("\r\n", "\n").Trim(); // TODO: newlines??
+".Replace("\r\n", "\n").Trim();
 
             Open = "<script>\np(\"o\");\n</script>\r\n";
         }
