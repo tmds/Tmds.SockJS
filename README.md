@@ -52,9 +52,32 @@ Inside the *Startup.cs* Configure-method we setup the SockJS end-point and imple
 
 **note** The Tmds.WebSockets library provides the WebSocket ReceiveTextAsync and SendAsync extension methods used in this example. This library can be used independent of Tmds.SockJS.
 
+## Supported Browsers
+
+The tables below show what browsers are supported using sockjs-client v0.3.4 and Tmds.SockJS.
+:x: is used to indicate the technique is not supported, alltough sockjs-client supports it.
+Techniques in the Streaming and Polling column are implemented in Tmds.SockJS.
+Techniques in the Websockets column are implemented in Microsoft.AspNet.WebSockets.
+
+### http/https
+
+_Browser_       | _Websockets_     | _Streaming_ | _Polling_
+----------------|------------------|-------------|-------------------
+IE 6, 7         | no               | no          | :x: jsonp-polling
+IE 8, 9 (cookies=no) |    no       |  :x: xdr-streaming &dagger; |  :x: xdr-polling
+IE 8, 9 (cookies=yes)|    no       | iframe-htmlfile | iframe-xhr-polling
+IE 10           | rfc6455          | xhr-streaming   | xhr-polling
+Chrome 6-13     | :x: hixie-76         | xhr-streaming   | xhr-polling
+Chrome 14+      | rfc6455 / :x: hybi-10 | xhr-streaming   | xhr-polling
+Firefox <10     | no               | xhr-streaming   | xhr-polling
+Firefox 10+     | rfc6455 / :x: hybi-10 | xhr-streaming   | xhr-polling
+Safari 5        | :x: hixie-76         | xhr-streaming   | xhr-polling
+Opera 10.70+    | no               | :x: iframe-eventsource | iframe-xhr-polling
+Konqueror       | no               | no          | :x: jsonp-polling
+
 ## Test Coverage
 
-sockjs-protocol test | Tmds.SockJS Test | comments
+_sockjs-protocol_ | _Tmds.SockJS_ | _Comments_
 -------------------- | ---------------- | --------
 BaseUrlGreeting.test_greeting | BaseUrlGreetingTest.TestGreeting | 
 BaseUrlGreeting.test_notFound | BaseUrlGreetingTest.TestNotFound | 
