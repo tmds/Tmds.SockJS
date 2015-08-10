@@ -39,14 +39,11 @@ namespace Tmds.SockJS
         }
 
         private SessionWebSocket _socket;
-        private int _sendState;
-        private int _receiveState;
         private string _sessionId;
         private SessionManager _sessionManager;
         private Receiver _receiver;
         private SockJSOptions _options;
         private ReaderWriterLockSlim _clientLock;
-        private byte[] _closeMessage;
         private CancellationTokenSource _clientTimeoutCts;
         private ConcurrentQueue<PendingReceive> _receives;
         private SemaphoreSlim _receivesSem;
@@ -54,6 +51,9 @@ namespace Tmds.SockJS
         private SemaphoreSlim _sendsSem;
         private SemaphoreSlim _sendEnqueueSem;
         private ConcurrentQueue<PendingSend> _sends;
+        private volatile byte[] _closeMessage;
+        private int _sendState; // use _sendEnqueueSem to synchronize
+        private volatile int _receiveState;
 
         public string SessionId { get { return _sessionId; } }
 
@@ -104,12 +104,12 @@ namespace Tmds.SockJS
                         return;
                     }
 
-                    await _sendDequeueSem.WaitAsync(_receiver.Aborted);
+                    await _sendDequeueSem.WaitAsync();
                     List<PendingSend> messages = null;
                     try
                     {
                         PendingSend firstSend = null;
-                        if (await _sendsSem.WaitAsync(_options.HeartbeatInterval))
+                        if (await _sendsSem.WaitAsync(_options.HeartbeatInterval, _receiver.Aborted))
                         {
                             _sends.TryDequeue(out firstSend);
                         }
@@ -141,7 +141,7 @@ namespace Tmds.SockJS
                             int length = firstSend.Buffer.Count + _receiver.BytesSent;
                             while (_sends.TryPeek(out nextSend) && nextSend.Type == WebSocketMessageType.Text)
                             {
-                                await _sendsSem.WaitAsync();
+                                await _sendsSem.WaitAsync(TimeSpan.Zero);
                                 _sends.TryDequeue(out nextSend);
 
                                 messages.Add(nextSend);
@@ -250,6 +250,10 @@ namespace Tmds.SockJS
 
         internal void ClientSend(List<JsonString> messages)
         {
+            if (_receiveState < ReceiveNone)
+            {
+                return;
+            }
             try
             {
                 foreach (var message in messages)
@@ -373,7 +377,7 @@ namespace Tmds.SockJS
                 else // (receive.Type == WebSocketMessageType.Close)
                 {
                     var result = new WebSocketReceiveResult(0, WebSocketMessageType.Close, true, receive.CloseStatus, receive.CloseStatusDescription);
-                    _receiveState = ReceiveCloseReceived;
+                    Interlocked.CompareExchange(ref _receiveState, ReceiveCloseReceived, ReceiveOne);
                     _receives.TryDequeue(out receive);
                     return result;
                 }
