@@ -113,11 +113,11 @@ HtmlFile.test_no_callback | HtmlFileTest.NoCallback |
 HtmlFile.test_invalid_callback | HtmlFileTest.InvalidCallback | 
 HtmlFile.test_response_limit | HtmlFileTest.Transport | 
 JsonPolling.* | notimplemented | 
-JsessionidCookie.test_basic | | 
-JsessionidCookie.test_xhr | | 
-JsessionidCookie.test_xhr_streaming | | 
+JsessionidCookie.test_basic | JSessionIDCookieTest.Basic | 
+JsessionidCookie.test_xhr | JSessionIDCookieTest.Xhr | 
+JsessionidCookie.test_xhr_streaming | JSessionIDCookieTest.XhrStreaming | 
 JsessionidCookie.test_eventsource | notimplemented | 
-JsessionidCookie.test_htmlfile | | 
+JsessionidCookie.test_htmlfile | JSessionIDCookieTest.HtmlFile | 
 JsessionidCookie.test_jsonp | notimplemented | 
 RawWebsocket.test_transport | | 
 RawWebsocket.test_close | | 

@@ -21,6 +21,7 @@ namespace Tmds.SockJS.Tests
         protected readonly string BaseUrl = "http://localhost/echo";
         protected readonly string CloseBaseUrl = "http://localhost/close";
         protected readonly string NoWebSocketBaseUrl = "http://localhost/disabled_websocket_echo";
+        protected readonly string CookieBaseUrl = "http://localhost/cookie_needed_echo";
 
         protected HttpClient CreateClient()
         {

@@ -23,6 +23,7 @@ namespace TestWebSite
             app.UseSockJS("/echo", new SockJSOptions() { MaxResponseLength = 4096 });
             app.UseSockJS("/disabled_websocket_echo", new SockJSOptions() { UseWebSocket = false });
             app.UseSockJS("/close", new SockJSOptions() { HeartbeatInterval = TimeSpan.FromSeconds(10), DisconnectTimeout = CloseDisconnectTimeout });
+            app.UseSockJS("/cookie_needed_echo", new SockJSOptions() { SetJSessionIDCookie = true });
 
             app.Use(async (context, next) =>
             {

@@ -9,13 +9,6 @@ namespace Tmds.SockJS.Tests
 {
     public class InfoTest : TestWebsiteTest
     {
-        private class Info
-        {
-            public bool websocket {get; set;}
-            public bool cookie_needed { get; set; }
-            public IList<string> origins { get; set; }
-            public int entropy { get; set; }
-        }
         [Fact]
         public async Task Basic()
         {
