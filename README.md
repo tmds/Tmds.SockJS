@@ -123,8 +123,8 @@ RawWebsocket.test_transport | |
 RawWebsocket.test_close | | 
 JSONEncoding.test_xhr_server_encodes | | 
 JSONEncoding.test_xhr_server_decodes | | 
-HandlingClose.test_close_frame | | 
-HandlingClose.test_close_request | | 
+HandlingClose.test_close_frame | HandlingCloseTest.CloseFrame | 
+HandlingClose.test_close_request | HandlingCloseTest.CloseRequest | 
 HandlingClose.test_abort_xhr_streaming | | 
 HandlingClose.test_abort_xhr_polling | | 
 Http10.test_synchronous | wonttest | 
