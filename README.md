@@ -94,7 +94,9 @@ SessionURLs.test_invalidPaths | SessionUrlsTest.InvalidPaths |
 SessionURLs.test_ignoringServerId | SessionUrlTest.IgnoringServerId | 
 Protocol.test_simpleSession | ProtocolTest.SimpleSession | 
 Protocol.test_closeSession | ProtocolTest.CloseSession | 
-WebsocketHttpErrors.test_httpMethod | | 
+WebsocketHttpErrors.test_httpMethod | WebSocketHttpErrorsTest.Method | 
+WebsocketHttpErrors.test_invalidConnectionHeader | WebSocketHttpErrorsTest.InvalidConnectionHeader | 
+WebsocketHttpErrors.test_invalidMethod | WebSocketHttpErrorsTest.InvalidMethod | 
 WebsocketHixie76.* | notimplemented | Not supported by ASP.NET stack
 WebsocketHybi10.* | notimplemented |  Not supported by ASP.NET stack
 XhrPolling.test_options | XhrPollingTest.Options | 

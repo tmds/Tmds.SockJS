@@ -36,6 +36,10 @@ namespace Tmds.SockJS
         private static readonly Random _random = new Random();
         private static readonly char[] ContentTypeSplitter = new[] { ';' };
         private static readonly Regex _htmlFileCallbackRegex;
+        private static readonly Regex[] _pathRegex;
+        private const int TypeEmpty = 0;
+        private const int TypeTop = 1;
+        private const int TypeSession = 2;
 
         static SessionManager()
         {
@@ -59,6 +63,12 @@ namespace Tmds.SockJS
             OtherReceiverCloseMessage = MessageWriter.CreateCloseBuffer((WebSocketCloseStatus)2010, "Another connection still open");
             AllowedXhrSendMediaTypes = new[] { "text/plain", "T", "application/json", "application/xml", "", "text/xml" };
             _htmlFileCallbackRegex = new Regex("[^a-zA-Z0-9-_.]");
+            _pathRegex = new[]
+            {
+                new Regex("^[/]?$"),
+                new Regex("^/([0-9-.a-z_]+)[/]?$"),
+                new Regex("^/([^/.]+)/([^/.]+)/([0-9-.a-z_]+)[/]?$")
+            };
         }
         private readonly RequestDelegate _next;
         private readonly SockJSOptions _options;
@@ -81,33 +91,33 @@ namespace Tmds.SockJS
 
             _routes = new List<Route>(new[]
             {
-                new Route("GET", "^[/]?$", HandleGreeting),
-                new Route("GET", "^/iframe[0-9-.a-z_]*.html[/]?$", HandleIFrame),
-                new Route("GET", "^/info[/]?$", HandleInfo),
-                new Route("OPTIONS", "^/info[/]?$", HandleOptionsGetResource),
-                new Route("GET", "^/([^/.]+)/([^/.]+)/jsonp[/]?$", HandleJsonp),
-                new Route("POST", "^/([^/.]+)/([^/.]+)/jsonp_send[/]?$", HandleJsonpSend),
-                new Route("POST", "^/([^/.]+)/([^/.]+)/xhr[/]?$", HandleXhr),
-                new Route("OPTIONS", "^/([^/.]+)/([^/.]+)/xhr[/]?$", HandleOptionsPostResource),
-                new Route("POST", "^/([^/.]+)/([^/.]+)/xhr_send[/]?$", HandleXhrSend),
-                new Route("OPTIONS", "^/([^/.]+)/([^/.]+)/xhr_send[/]?$", HandleOptionsPostResource),
-                new Route("POST", "^/([^/.]+)/([^/.]+)/xhr_streaming[/]?$", HandleXhrStreaming),
-                new Route("OPTIONS", "^/([^/.]+)/([^/.]+)/xhr_streaming[/]?$", HandleOptionsPostResource),
-                new Route("GET", "^/([^/.]+)/([^/.]+)/eventsource[/]?$", HandleEventSource),
-                new Route("GET", "^/([^/.]+)/([^/.]+)/htmlfile[/]?$", HandleHtmlFile),
+                new Route("GET", TypeEmpty, false, "", HandleGreeting),
+                new Route("GET", TypeTop, true, "iframe[0-9-.a-z_]*.html", HandleIFrame),
+                new Route("GET", TypeTop, false, "info", HandleInfo),
+                new Route("OPTIONS", TypeTop, false, "info", HandleOptionsGetResource),
+                new Route("GET", TypeSession, false, "jsonp", HandleJsonp),
+                new Route("POST", TypeSession, false, "jsonp_send", HandleJsonpSend),
+                new Route("POST", TypeSession, false, "xhr", HandleXhr),
+                new Route("OPTIONS", TypeSession, false, "xhr", HandleOptionsPostResource),
+                new Route("POST", TypeSession, false, "xhr_send", HandleXhrSend),
+                new Route("OPTIONS", TypeSession, false, "xhr_send", HandleOptionsPostResource),
+                new Route("POST", TypeSession, false, "xhr_streaming", HandleXhrStreaming),
+                new Route("OPTIONS", TypeSession, false, "xhr_streaming", HandleOptionsPostResource),
+                new Route("GET", TypeSession, false, "eventsource", HandleEventSource),
+                new Route("GET", TypeSession, false, "htmlfile", HandleHtmlFile),
             });
             if (_options.UseWebSocket)
             {
                 _routes.AddRange(new[] {
-                    new Route("GET", "^/([^/.]+)/([^/.]+)/websocket[/]?$", HandleSockJSWebSocket),
-                    new Route("GET", "^/websocket[/]?$", HandleWebSocket),
+                    new Route("GET", TypeSession, false, "websocket", HandleSockJSWebSocket),
+                    new Route("GET", TypeTop, false, "websocket", HandleWebSocket),
                 });
             }
             else
             {
                 _routes.AddRange(new[] {
-                    new Route("GET", "^/([^/.]+)/([^/.]+)/websocket[/]?$", HandleNoWebSocket),
-                    new Route("GET", "^/websocket[/]?$", HandleNoWebSocket),
+                    new Route("GET", TypeSession, false, "websocket", HandleNoWebSocket),
+                    new Route("GET", TypeTop, false, "websocket", HandleNoWebSocket),
                 });
             }
         }
@@ -133,6 +143,11 @@ namespace Tmds.SockJS
 
         private Task HandleWebSocket(HttpContext context, string sessionId)
         {
+            if (!context.WebSockets.IsWebSocketRequest)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return ExposeText(context, "Not a valid websocket request");
+            }
             context.Request.Path = _rewritePath;
             return _next(context);
         }
@@ -456,6 +471,21 @@ namespace Tmds.SockJS
             sb.Append("\"");
             return sb.ToString();
         }
+
+        private bool Matches(Match match, Route route)
+        {
+            if ((match.Groups.Count == (route.Type + 1)) ||
+                ((match.Groups.Count == 4) && (route.Type == TypeSession)))
+            {
+                string last = match.Groups.Count > 1 ? match.Groups[match.Groups.Count - 1].Value : string.Empty;
+                if (((route.Raw != null) && (route.Raw.Equals(last, StringComparison.Ordinal))) ||
+                    ((route.RegEx != null) && route.RegEx.IsMatch(last)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         
         public Task Invoke(HttpContext context)
         {
@@ -464,23 +494,48 @@ namespace Tmds.SockJS
             {
                 return _next(context);
             }
-            foreach (var route in _routes)
+            Match match = null;
+            for (int i = 0; ((i < _pathRegex.Length) && (match == null)); i++)
             {
-                if (context.Request.Method.Equals(route.Method, StringComparison.Ordinal))
+                match = _pathRegex[i].Match(path.Value);
+                if (!match.Success)
                 {
-                    var match = route.Path.Match(path.Value);
-                    if (match.Success)
+                    match = null;
+                }
+            }
+            bool pathMatch = false;
+            if (match != null)
+            {
+                foreach (var route in _routes)
+                {
+                    if (Matches(match, route))
                     {
-                        string session = null;
-                        if (match.Groups.Count == 3)
+                        pathMatch = true;
+                        if (context.Request.Method.Equals(route.Method, StringComparison.OrdinalIgnoreCase))
                         {
-                            session = match.Groups[2].Value;
+                            string session = null;
+                            if (route.Type == TypeSession)
+                            {
+                                session = match.Groups[2].Value;
+                            }
+                            return route.Handler(context, session);
                         }
-                        return route.Handler(context, session);
                     }
                 }
             }
+            if (pathMatch)
+            {
+                string methods = string.Join(", ", _routes.Where(route => Matches(match, route)));
+                return HandleNotAllowed(context, methods);
+            }
             return HandleNotFound(context);
+        }
+
+        private Task HandleNotAllowed(HttpContext context, string methods)
+        {
+            context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
+            context.Response.Headers.Add(HeaderNames.Allow, new string[] { methods });
+            return ExposeNothing(context);
         }
 
         private Task HandleNotFound(HttpContext context)
