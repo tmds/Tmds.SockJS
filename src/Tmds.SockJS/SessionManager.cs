@@ -525,7 +525,7 @@ namespace Tmds.SockJS
             }
             if (pathMatch)
             {
-                string methods = string.Join(", ", _routes.Where(route => Matches(match, route)));
+                string methods = string.Join(", ", _routes.Where(route => Matches(match, route)).Select(route => route.Method));
                 return HandleNotAllowed(context, methods);
             }
             return HandleNotFound(context);
