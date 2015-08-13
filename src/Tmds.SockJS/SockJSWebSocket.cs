@@ -98,16 +98,19 @@ namespace Tmds.SockJS
         {
             while (true)
             {
-                if (_receivedMessages != null && _receivedMessages.Count > 0)
+                if (_receivedMessages != null)
                 {
-                    var first = _receivedMessages[0];
-                    if (first.IsEmpty)
+                    var head = _receivedMessages[0];
+                    int length = head.Decode(buffer);
+                    if (head.IsEmpty)
                     {
                         _receivedMessages.RemoveAt(0);
-                        continue;
+                        if (_receivedMessages.Count == 0)
+                        {
+                            _receivedMessages = null;
+                        }
                     }
-                    int count = first.Decode(buffer);
-                    return new WebSocketReceiveResult(count, WebSocketMessageType.Text, true);
+                    return new WebSocketReceiveResult(length, WebSocketMessageType.Text, true);
                 }
 
                 var memoryStream = new MemoryStream();

@@ -54,11 +54,11 @@ namespace Tmds.SockJS
                                 int b3 = readHex(_array[readOffset++]);
                                 int b4 = readHex(_array[readOffset++]);
                                 b = (byte)((b1 << 4) + b2);
-                                int _a = 0;
-                                int _b = 0;
-                                int _c = 0;
                                 if ((b & 0xfc) == 0xd8)
                                 {
+                                    int _a = 0;
+                                    int _b = 0;
+                                    int _c = 0;
                                     remaining = _endOffset - readOffset;
                                     if ((remaining < 6) ||
                                         (_array[readOffset++] != (byte)'\\') ||
@@ -86,17 +86,21 @@ namespace Tmds.SockJS
                                 }
                                 else
                                 {
-                                    _b = b;
-                                    _a = (byte)((b3 << 4) + b4);
-                                    if (_b != 0)
+                                    int u = (b << 8) + ((b3 << 4) + b4);
+                                    if (u < 0x80)
                                     {
-                                        destination.Array[writeOffset++] = (byte)(0xe0 + (_b >> 4));
-                                        destination.Array[writeOffset++] = (byte)(0x80 + ((_b & 0xf) << 2) + ((_a & 0xc0) >> 6));
-                                        b = (byte)(0x80 + (_a & 0x3f));
+                                        b = (byte)u;
+                                    }
+                                    else if (u < 0x800)
+                                    {
+                                        destination.Array[writeOffset++] = (byte)(0xc0 + (u >> 6));
+                                        b = (byte)(0x80 + (u & 0x3f));
                                     }
                                     else
                                     {
-                                        b = (byte)_a;
+                                        destination.Array[writeOffset++] = (byte)(0xe0 + (u >> 12));
+                                        destination.Array[writeOffset++] = (byte)(0x80 + ((u & 0xfff) >> 6));
+                                        b = (byte)(0x80 + (u & 0x3f));
                                     }
                                 }
                             }
@@ -135,7 +139,7 @@ namespace Tmds.SockJS
         {
             get
             {
-                return _offset < _endOffset;
+                return _offset <= _endOffset;
             }
         }
     }

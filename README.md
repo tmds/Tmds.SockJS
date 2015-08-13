@@ -123,8 +123,8 @@ JsessionidCookie.test_htmlfile | JSessionIDCookieTest.HtmlFile |
 JsessionidCookie.test_jsonp | notimplemented | 
 RawWebsocket.test_transport | | 
 RawWebsocket.test_close | | 
-JSONEncoding.test_xhr_server_encodes | | 
-JSONEncoding.test_xhr_server_decodes | | 
+JSONEncoding.test_xhr_server_encodes | JsonEncodingTest.ServerEncodes | 
+JSONEncoding.test_xhr_server_decodes | JsonEncodingTest.ServerDecodes | 
 HandlingClose.test_close_frame | HandlingCloseTest.CloseFrame | 
 HandlingClose.test_close_request | HandlingCloseTest.CloseRequest | 
 HandlingClose.test_abort_xhr_streaming | | 

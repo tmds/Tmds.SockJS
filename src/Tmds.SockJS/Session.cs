@@ -352,7 +352,6 @@ namespace Tmds.SockJS
                     try
                     {
                         int length = receive.TextMessage.Decode(buffer);
-
                         bool endOfMessage = receive.TextMessage.IsEmpty;
                         var result = new WebSocketReceiveResult(length, WebSocketMessageType.Text, endOfMessage);
 
