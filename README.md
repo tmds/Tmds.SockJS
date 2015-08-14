@@ -105,7 +105,8 @@ XhrPolling.test_invalid_session | XhrPollingTest.InvalidSession |
 XhrPolling.test_invalid_json | XhrPollingTest.InvalidJson | 
 XhrPolling.test_content_types | XhrPollingTest.ContentTypes | Content Types "", "T", and explicit charset not tested
 XhrPolling.test_request_headers_cors | XhrPollingTest.RequestHeadersCors | 
-XhrPolling.test_sending_empty_frame | | 
+XhrPolling.test_sending_empty_frame | XhrPollingTest.SendingEmptyFrame | 
+ | XhrPollingTest.SendingEmptyText | 
 XhrStreaming.test_options | XhrStreamingTest.Options | 
 XhrStreaming.test_transport | XhrStreamingTest.Transport | 
 XhrStreaming.test_response_limit | XhrStreamingTest.ResponseLimit | 

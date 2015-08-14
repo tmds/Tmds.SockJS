@@ -144,5 +144,49 @@ namespace Tmds.SockJS.Tests
             AssertCors(response, null);
             Assert.False(response.Headers.TryGetValues(CorsConstants.AccessControlAllowHeaders, out values));
         }
+
+        [Fact]
+        public async Task SendingEmptyFrame()
+        {
+            var client = CreateClient();
+            string url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
+            var response = await client.PostAsync(url + "/xhr", null);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal("o\n", content);
+
+            var requestContent = new StringContent("[]", Encoding.UTF8, "application/json");
+            response = await client.PostAsync(url + "/xhr_send", requestContent);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            requestContent = new StringContent("[\"a\"]", Encoding.UTF8, "application/json");
+            response = await client.PostAsync(url + "/xhr_send", requestContent);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            response = await client.PostAsync(url + "/xhr", null);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            content = await response.Content.ReadAsStringAsync();
+            Assert.Equal("a[\"a\"]\n", content);
+        }
+
+        [Fact]
+        public async Task SendingEmptyText()
+        {
+            var client = CreateClient();
+            string url = BaseUrl + "/000/" + Guid.NewGuid().ToString();
+            var response = await client.PostAsync(url + "/xhr", null);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.Equal("o\n", content);
+
+            var requestContent = new StringContent("[\"\"]", Encoding.UTF8, "application/json");
+            response = await client.PostAsync(url + "/xhr_send", requestContent);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            response = await client.PostAsync(url + "/xhr", null);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            content = await response.Content.ReadAsStringAsync();
+            Assert.Equal("a[\"\"]\n", content);
+        }
     }
 }
