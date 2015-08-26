@@ -83,13 +83,13 @@ namespace Tmds.SockJS
             }
             else
             {
-                CancelClientTimeout();
                 return true;
             }
         }
         
         public async Task ClientReceiveAsync()
         {
+            CancelClientTimeout();
             try
             {
                 if (_receiver.IsNotOpen)
@@ -105,25 +105,28 @@ namespace Tmds.SockJS
                     }
 
                     await _sendDequeueSem.WaitAsync();
+                    bool release = true;
                     List<PendingSend> messages = null;
                     try
                     {
                         PendingSend firstSend = null;
-                        if (await _sendsSem.WaitAsync(_options.HeartbeatInterval, _receiver.Aborted))
+                        bool timeout = !(await _sendsSem.WaitAsync(_options.HeartbeatInterval, _receiver.Aborted));
+                        if (_sendState == SendDisposed)
                         {
-                            _sends.TryDequeue(out firstSend);
+                            throw SessionWebSocket.NewDisposedException();
                         }
-
-                        if (firstSend == null) // timeout
+                        if (timeout)
                         {
                             // heartbeat
                             await _receiver.SendHeartBeat();
                             continue;
                         }
+                        _sends.TryDequeue(out firstSend);
 
                         if (firstSend.Type == WebSocketMessageType.Close)
                         {
                             _sendDequeueSem.Release();
+                            release = false;
                             if (_closeMessage == null)
                             {
                                 var closeMessage = new byte[firstSend.Buffer.Count];
@@ -139,7 +142,7 @@ namespace Tmds.SockJS
                             messages.Add(firstSend);
                             PendingSend nextSend;
                             int length = firstSend.Buffer.Count + _receiver.BytesSent;
-                            while (_sends.TryPeek(out nextSend) && nextSend.Type == WebSocketMessageType.Text)
+                            while (_sends.TryPeek(out nextSend) && (nextSend.Type == WebSocketMessageType.Text))
                             {
                                 await _sendsSem.WaitAsync(TimeSpan.Zero);
                                 _sends.TryDequeue(out nextSend);
@@ -152,10 +155,11 @@ namespace Tmds.SockJS
                                 }
                             }
                             _sendDequeueSem.Release();
+                            release = false;
                             await _receiver.SendMessages(messages);
                         }
                     }
-                    catch (ObjectDisposedException) // _sendsSem
+                    catch (ObjectDisposedException) // SendDisposed
                     {
                         if (messages != null)
                         {
@@ -169,14 +173,22 @@ namespace Tmds.SockJS
                         {
                             send.CompleteDisposed();
                         }
-                        _sendDequeueSem.Release();
-                        continue; // _closeMessage was set when _sendsSem was disposed
+                        continue; // _closeMessage was set when SendDisposed
+                    }
+                    finally
+                    {
+                        if (release)
+                        {
+                            _sendDequeueSem.Release();
+                            release = false;
+                        }
                     }
                 }
             }
             catch
             {
                 await HandleClientSendErrorAsync();
+                throw;
             }
             finally
             {
@@ -202,7 +214,7 @@ namespace Tmds.SockJS
             Interlocked.CompareExchange(ref _closeMessage, DisposeCloseBuffer, null);
 
             // dispose sends
-            _sendsSem.Dispose();
+            _sendsSem.Release();
             _sendDequeueSem.Wait();
             PendingSend send;
             while (_sends.TryDequeue(out send))
@@ -213,7 +225,7 @@ namespace Tmds.SockJS
 
             // stop receive
             _receiveState = ReceiveDisposed;
-            _receivesSem.Dispose();
+            _receivesSem.Release();
         }
 
         public async Task HandleClientSendErrorAsync()
@@ -240,12 +252,7 @@ namespace Tmds.SockJS
 
             // stop receive
             _receives.Enqueue(CloseNotSentPendingReceive);
-            try
-            {
-                _receivesSem.Release();
-            }
-            catch
-            { }
+            _receivesSem.Release();
         }
 
         internal void ClientSend(List<JsonString> messages)
@@ -254,22 +261,20 @@ namespace Tmds.SockJS
             {
                 return;
             }
-            try
+            foreach (var message in messages)
             {
-                foreach (var message in messages)
-                {
-                    _receives.Enqueue(new PendingReceive(message));
-                    _receivesSem.Release();
-                }
+                _receives.Enqueue(new PendingReceive(message));
+                _receivesSem.Release();
             }
-            catch // _receivesSem disposed
-            { }
         }
 
         void CancelClientTimeout()
         {
-            _clientTimeoutCts.Cancel();
-            _clientTimeoutCts = null;
+            if (_clientTimeoutCts != null)
+            {
+                _clientTimeoutCts.Cancel();
+                _clientTimeoutCts = null;
+            }
         }
 
         async void ScheduleClientTimeout()
@@ -317,12 +322,7 @@ namespace Tmds.SockJS
             {
                 _receives.Enqueue(CloseSentPendingReceive);
             }
-            try
-            {
-                _receivesSem.Release();
-            }
-            catch
-            { }
+            _receivesSem.Release();
         }
 
         internal async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
@@ -344,6 +344,10 @@ namespace Tmds.SockJS
             try
             {
                 await _receivesSem.WaitAsync(cancellationToken);
+                if (_receiveState == ReceiveDisposed)
+                {
+                    throw SessionWebSocket.NewDisposedException();
+                }
                 PendingReceive receive = null;
                 _receives.TryPeek(out receive);
 
