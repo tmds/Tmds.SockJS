@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using Tmds.WebSockets;
 using System.Net.WebSockets;
+using System.IO;
 
 namespace TestWebSite
 {
@@ -39,10 +40,28 @@ namespace TestWebSite
                     else
                     {
                         var socket = await context.WebSockets.AcceptWebSocketAsync();
+                        var memoryStream = new MemoryStream();
                         while (true)
                         {
-                            string received = await socket.ReceiveTextAsync();
-                            await socket.SendAsync(received);
+                            var array = new byte[1024];
+                            var receiveResult = await socket.ReceiveAsync(new ArraySegment<byte>(array), CancellationToken.None);
+                            memoryStream.Write(array, 0, receiveResult.Count);
+                            if (receiveResult.MessageType == WebSocketMessageType.Close)
+                            {
+                                await socket.CloseAsync(receiveResult.CloseStatus.Value, string.Empty, CancellationToken.None);
+                                return;
+                            }
+                            else if (receiveResult.EndOfMessage)
+                            {
+                                var buffer = new ArraySegment<byte>();
+#if DNXCORE50
+                                memoryStream.TryGetBuffer(out buffer);
+#else
+                                buffer = new ArraySegment<byte>(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
+#endif
+                                await socket.SendAsync(buffer, receiveResult.MessageType, receiveResult.EndOfMessage, CancellationToken.None);
+                                memoryStream.SetLength(0);
+                            }
                         }
                     }
                 }

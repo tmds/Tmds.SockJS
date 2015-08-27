@@ -115,6 +115,7 @@ namespace Tmds.SockJS
                 }
                 destination.Array[writeOffset++] = b;
             };
+            _offset = readOffset;
             return writeOffset - destination.Offset;
         }
 
@@ -139,7 +140,7 @@ namespace Tmds.SockJS
         {
             get
             {
-                return _offset <= _endOffset;
+                return _offset >= _endOffset;
             }
         }
     }
