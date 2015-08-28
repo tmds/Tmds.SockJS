@@ -134,4 +134,6 @@ Http10.test_synchronous | wonttest |
 Http10.test_streaming | wonttest | 
 Http11.test_synchronous | wonttest | 
 Http11.test_streaming | wonttest | 
- | ReaderWriterTest.Reader | Test more
+ | ReaderWriterTest.Reader | 
+ | ReaderWriterTest.SingleByteOverflow | 
+ | ReaderWriterTest.MultiByteOverflow | 

@@ -10,27 +10,47 @@ namespace Tmds.SockJS
         private byte[] _array;
         private int _offset;
         private int _endOffset;
+        private int _writeBytesRemaining;
+        private byte[] _remainingWriteBytes;
 
         public JsonString(byte[] buffer, int startIndex, int endIndex)
         {
             _array = buffer;
             _offset = startIndex;
             _endOffset = endIndex;
+            _writeBytesRemaining = 0;
+            _remainingWriteBytes = new byte[4];
         }
 
         public int Decode(ArraySegment<byte> destination)
         {
-            int readOffset = _offset;
             int writeOffset = destination.Offset;
-            int writEndOffset = writeOffset + destination.Count;
-            while ((readOffset < _endOffset) && (writeOffset < writEndOffset))
+            int writeEndOffset = writeOffset + destination.Count;
+
+            if (_writeBytesRemaining > 0)
+            {
+                int length = Math.Min(destination.Count, _writeBytesRemaining);
+                for (int i = 0; i < length; i++)
+                {
+                    destination.Array[writeOffset++] = _remainingWriteBytes[i];
+                }
+                _writeBytesRemaining -= length;
+                for (int i = length; i < _remainingWriteBytes.Length; i++)
+                {
+                    _remainingWriteBytes[i - length] = _remainingWriteBytes[i];
+                }
+            }
+
+            int readOffset = _offset;
+            int readEndOffset = _endOffset;
+            while ((readOffset < readEndOffset) && (writeOffset < writeEndOffset))
             {
                 byte b = _array[readOffset++];
                 bool escape = b == (byte)'\\';
                 if (escape)
                 {
-                    int remaining = _endOffset - readOffset;
-                    if (remaining < 1)
+                    int readRemaining = _endOffset - readOffset;
+                    if (readRemaining < 1)
                     {
                         throw new ArgumentException("Json string cannot terminate with escape character ('\\')");
                     }
@@ -44,8 +64,9 @@ namespace Tmds.SockJS
                         case (byte)'t': b = (byte)'\t'; break;
                         case (byte)'u':
                             {
-                                remaining = _endOffset - readOffset;
-                                if (remaining < 4)
+                                readRemaining = readEndOffset - readOffset;
+                                int writeRemaining = writeEndOffset - writeOffset;
+                                if (readRemaining < 4)
                                 {
                                     throw new ArgumentException("Json string \\u escape sequence must be followed by 4 hexadecimal digits.");
                                 }
@@ -59,8 +80,8 @@ namespace Tmds.SockJS
                                     int _a = 0;
                                     int _b = 0;
                                     int _c = 0;
-                                    remaining = _endOffset - readOffset;
-                                    if ((remaining < 6) ||
+                                    readRemaining = readEndOffset - readOffset;
+                                    if ((readRemaining < 6) ||
                                         (_array[readOffset++] != (byte)'\\') ||
                                         (_array[readOffset++] != (byte)'u'))
                                     {
@@ -79,10 +100,27 @@ namespace Tmds.SockJS
                                     _b = ((b3 & 0x3) << 6) + (b4 << 2) + (b6 & 0x3);
                                     _a = (byte)((b7 << 4) + b8);
 
-                                    destination.Array[writeOffset++] = (byte)(0xf0 + (_c >> 2));
-                                    destination.Array[writeOffset++] = (byte)(0x80 + ((_c & 0x3) << 4) + ((_b & 0xf0) >> 4));
-                                    destination.Array[writeOffset++] = (byte)(0x80 + ((_b & 0xf) << 2) + ((_a & 0xc0) >> 6));
-                                    b = (byte)(0x80 + (_a & 0x3f));
+                                    byte wb1 = (byte)(0xf0 + (_c >> 2));
+                                    byte wb2 = (byte)(0x80 + ((_c & 0x3) << 4) + ((_b & 0xf0) >> 4));
+                                    byte wb3 = (byte)(0x80 + ((_b & 0xf) << 2) + ((_a & 0xc0) >> 6));
+                                    byte wb4 = (byte)(0x80 + (_a & 0x3f));
+                                    if (writeRemaining >= 4)
+                                    {
+                                        destination.Array[writeOffset++] = wb1;
+                                        destination.Array[writeOffset++] = wb2;
+                                        destination.Array[writeOffset++] = wb3;
+                                        destination.Array[writeOffset++] = wb4;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        _remainingWriteBytes[0] = wb1;
+                                        _remainingWriteBytes[1] = wb2;
+                                        _remainingWriteBytes[2] = wb3;
+                                        _remainingWriteBytes[3] = wb4;
+                                        _writeBytesRemaining = 4;
+                                        break;
+                                    }
                                 }
                                 else
                                 {
@@ -93,14 +131,42 @@ namespace Tmds.SockJS
                                     }
                                     else if (u < 0x800)
                                     {
-                                        destination.Array[writeOffset++] = (byte)(0xc0 + (u >> 6));
-                                        b = (byte)(0x80 + (u & 0x3f));
+                                        byte wb1 = (byte)(0xc0 + (u >> 6));
+                                        byte wb2 = (byte)(0x80 + (u & 0x3f));
+                                        if (writeRemaining >= 2)
+                                        {
+                                            destination.Array[writeOffset++] = wb1;
+                                            destination.Array[writeOffset++] = wb2;
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            _remainingWriteBytes[0] = wb1;
+                                            _remainingWriteBytes[1] = wb2;
+                                            _writeBytesRemaining = 2;
+                                            break;
+                                        }
                                     }
                                     else
                                     {
-                                        destination.Array[writeOffset++] = (byte)(0xe0 + (u >> 12));
-                                        destination.Array[writeOffset++] = (byte)(0x80 + ((u & 0xfff) >> 6));
-                                        b = (byte)(0x80 + (u & 0x3f));
+                                        byte wb1 = (byte)(0xe0 + (u >> 12));
+                                        byte wb2 = (byte)(0x80 + ((u & 0xfff) >> 6));
+                                        byte wb3 = (byte)(0x80 + (u & 0x3f));
+                                        if (writeRemaining >= 4)
+                                        {
+                                            destination.Array[writeOffset++] = wb1;
+                                            destination.Array[writeOffset++] = wb2;
+                                            destination.Array[writeOffset++] = wb3;
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            _remainingWriteBytes[0] = wb1;
+                                            _remainingWriteBytes[1] = wb2;
+                                            _remainingWriteBytes[2] = wb3;
+                                            _writeBytesRemaining = 3;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -113,7 +179,14 @@ namespace Tmds.SockJS
                             throw new ArgumentException(string.Format("Json string escape sequence cannot start with 0x{0:x2}", (int)b));
                     }
                 }
-                destination.Array[writeOffset++] = b;
+                if (_writeBytesRemaining > 0)
+                {
+                    break;
+                }
+                else
+                {
+                    destination.Array[writeOffset++] = b;
+                }
             };
             _offset = readOffset;
             return writeOffset - destination.Offset;
@@ -140,7 +213,7 @@ namespace Tmds.SockJS
         {
             get
             {
-                return _offset >= _endOffset;
+                return (_offset >= _endOffset) && (_writeBytesRemaining == 0);
             }
         }
     }
