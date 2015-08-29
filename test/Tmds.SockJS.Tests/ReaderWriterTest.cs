@@ -13,7 +13,7 @@ namespace Tmds.SockJS.Tests
         {
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(input));
             var reader = new ReceiveMessageReader(stream);
-            var messages = await reader.ReadMessages();
+            var messages = await reader.ReadMessages(true);
             Assert.Equal(expected.Length, messages.Count);
             // this is a small buffer to test overflow
             byte[] buffer = new byte[10];
