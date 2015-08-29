@@ -17,7 +17,7 @@ namespace Tmds.SockJS
             this.body = body;
         }
 
-        public async Task<List<JsonString>> ReadMessages()
+        public async Task<List<JsonString>> ReadMessages(bool ignoreEmpty)
         {
             var messages = new List<JsonString> ();
             using (var memoryStream = new MemoryStream())
@@ -30,7 +30,7 @@ namespace Tmds.SockJS
 #else
                 var buffer = memoryStream.GetBuffer();
 #endif
-                if (buffer.Length == 0)
+                if ((buffer.Length == 0) && (!ignoreEmpty))
                 {
                     throw new Exception("Payload expected.");
                 }

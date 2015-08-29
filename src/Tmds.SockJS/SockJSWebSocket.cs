@@ -136,7 +136,19 @@ namespace Tmds.SockJS
 
                 memoryStream.Position = 0;
                 var reader = new ReceiveMessageReader(memoryStream);
-                _receivedMessages = await reader.ReadMessages();
+                try
+                {
+                    _receivedMessages = await reader.ReadMessages(true);
+                }
+                catch
+                {
+                    Abort();
+                    throw;
+                }
+                if (_receivedMessages.Count == 0)
+                {
+                    _receivedMessages = null;
+                }
             }
         }
 

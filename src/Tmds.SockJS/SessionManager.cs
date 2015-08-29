@@ -135,10 +135,12 @@ namespace Tmds.SockJS
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                 return ExposeText(context, "Not a valid websocket request");
             }
+
             var feature = new SockJSWebSocketFeature(context.GetFeature<IHttpWebSocketFeature>());
+            context.SetFeature<IHttpWebSocketFeature>(feature);
             context.Request.Path = _rewritePath;
 
-            throw new NotImplementedException();
+            return _next(context);
         }
 
         private Task HandleWebSocket(HttpContext context, string sessionId)
@@ -208,7 +210,7 @@ namespace Tmds.SockJS
                 }
 
                 var reader = new ReceiveMessageReader(context.Request.Body);
-                messages = await reader.ReadMessages();
+                messages = await reader.ReadMessages(false);
             }
             catch (Exception e)
             {

@@ -146,7 +146,6 @@ namespace Tmds.SockJS
             WriteArrayStart();
             WriteJsonString(buffer);
             WriteArrayEnd();
-            WriteNewline();
         }
         private void WriteBytes(byte[] bytes)
         {
