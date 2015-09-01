@@ -7,11 +7,11 @@ AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/kpmtd98p5p4x1
 
 This example implements an 'echo' websocket service. The SockJS endpoint for the service is at the '/echo' path.
 
-In *project.json* add Tmds.SockJS and Tmds.WebSockets to the dependencies:
+In *project.json* add Tmds.SockJS and Tmds.WebSockets.Sources to the dependencies:
 ```JSON
 	"dependencies": {
-		"Tmds.SockJS": "0.3.0",
-		"Tmds.WebSockets": "1.0.0",
+		"Tmds.SockJS": "",
+		"Tmds.WebSockets.Sources": "",
 	},
 ```
 Inside the *Startup.cs* Configure-method we setup the SockJS end-point and implement the echo service:

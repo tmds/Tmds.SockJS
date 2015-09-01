@@ -113,7 +113,7 @@ namespace Tmds.SockJS
                     return new WebSocketReceiveResult(length, WebSocketMessageType.Text, true);
                 }
 
-                var memoryStream = new MemoryStream();
+                MemoryStream memoryStream = null;
                 bool endOfMessage = false;
                 var receiveBuffer = new byte[buffer.Count * 2];
                 while (!endOfMessage)
@@ -121,8 +121,16 @@ namespace Tmds.SockJS
                     var receiveResult = await _webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), cancellationToken);
                     if (receiveResult.MessageType == WebSocketMessageType.Text)
                     {
-                        memoryStream.Write(receiveBuffer, 0, receiveResult.Count);
                         endOfMessage = receiveResult.EndOfMessage;
+                        if (endOfMessage && (memoryStream == null))
+                        {
+                            memoryStream = new MemoryStream(receiveBuffer, 0, receiveResult.Count);
+                        }
+                        else
+                        {
+                            memoryStream = memoryStream ?? new MemoryStream();
+                            memoryStream.Write(receiveBuffer, 0, receiveResult.Count);
+                        }
                     }
                     else if (receiveResult.MessageType == WebSocketMessageType.Binary)
                     {

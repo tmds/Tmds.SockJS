@@ -5,6 +5,7 @@
     "url": "git://github.com/tmds/Tmds.SockJS"
   },
   "description": "WebSocket Extensions",
+  "shared": "*.cs",
   "authors": [ "Tom Deseyn" ],
   "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
   "projectUrl": "https://github.com/tmds/Tmds.SockJS/",

@@ -1,18 +1,19 @@
 ﻿{
-  "version": "1.0.0-*",
-  "description": "Tests for Tmds.SockJS",
-  "authors": [ "Tom Deseyn" ],
-  "dependencies": {
-    "xunit.runner.aspnet": "2.0.0-aspnet-beta6",
-    "Microsoft.AspNet.TestHost": "1.0.0-beta6",
-    "TestWebSite": "1.0.0-*",
-    "Microsoft.AspNet.Mvc.Core": "6.0.0-beta6",
-    "Microsoft.AspNet.WebSockets.Protocol": "1.0.0-beta6"
-  },
-  "commands": {
-    "test": "xunit.runner.aspnet"
-  },
-  "frameworks": {
-    "dnx451": { }
-  }
+    "version": "1.0.0-*",
+    "description": "Tests for Tmds.SockJS",
+    "authors": [ "Tom Deseyn" ],
+    "dependencies": {
+        "xunit.runner.aspnet": "2.0.0-aspnet-beta6",
+        "Microsoft.AspNet.TestHost": "1.0.0-beta6",
+        "TestWebSite": "1.0.0-*",
+        "Microsoft.AspNet.Mvc.Core": "6.0.0-beta6",
+        "Microsoft.AspNet.WebSockets.Protocol": "1.0.0-beta6"
+    },
+    "commands": {
+        "test": "xunit.runner.aspnet"
+    },
+    "frameworks": {
+        "dnxcore50": { },
+        "dnx451": { }
+    }
 }

@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{877E1628-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebSites", "WebSites", "{B697F7E5-DD6D-49C9-B1E0-873FB564609B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Tmds.WebSockets", "src\Tmds.WebSockets\Tmds.WebSockets.xproj", "{4D6D0D99-C0EF-4A7C-BDBD-C578DAF3B763}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Tmds.WebSockets.Sources", "src\Tmds.WebSockets.Sources\Tmds.WebSockets.Sources.xproj", "{4D6D0D99-C0EF-4A7C-BDBD-C578DAF3B763}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "TestWebSite", "test\WebSites\TestWebSite\TestWebSite.xproj", "{1F45DD9A-C63E-4290-AAA4-DB00FABE9B3B}"
 EndProject
