@@ -3,6 +3,7 @@
     "version": "1.0.0-*",
 
     "dependencies": {
+        "Kestrel": "1.0.0-beta6",
         "Microsoft.AspNet.Server.IIS": "1.0.0-beta6",
         "Microsoft.AspNet.Server.WebListener": "1.0.0-beta6",
         "Tmds.SockJS": "0.3.0-*",
@@ -11,7 +12,8 @@
     },
 
     "commands": {
-        "web": "Microsoft.AspNet.Hosting --config hosting.ini"
+        "web": "Microsoft.AspNet.Hosting --config hosting.ini",
+        "kestrel": "Microsoft.AspNet.Hosting --server Kestrel --server.urls http://localhost:8081"
     },
 
     "frameworks": {
