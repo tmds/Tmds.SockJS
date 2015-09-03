@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Cors.Core;
+using Microsoft.AspNet.TestHost;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using System;
@@ -16,8 +17,6 @@ namespace Tmds.SockJS.Tests
     public class TestWebsiteTest
     {
         protected const string SiteName = nameof(TestWebSite);
-        protected readonly Action<IApplicationBuilder> _app = new Startup().Configure;
-        protected readonly Action<IServiceCollection> _configureServices = new Startup().ConfigureServices;
         protected readonly string BaseUrl = "http://localhost/echo";
         protected readonly string CloseBaseUrl = "http://localhost/close";
         protected readonly string NoWebSocketBaseUrl = "http://localhost/disabled_websocket_echo";
@@ -25,9 +24,8 @@ namespace Tmds.SockJS.Tests
 
         protected HttpClient CreateClient()
         {
-            var server = TestHelper.CreateServer(_app, SiteName, _configureServices);
-            var client = server.CreateClient();
-            return client;
+            var server = new TestServer(TestServer.CreateBuilder().UseStartup<Startup>());
+            return server.CreateClient();
         }
 
         protected void AssertNoCookie(HttpResponseMessage response)

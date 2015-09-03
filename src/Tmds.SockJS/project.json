@@ -10,27 +10,27 @@
   "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
   "summary": "SockJS websocket emulation for ASP.NET 5",
   "dependencies": {
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-beta6",
-    "Microsoft.Framework.DependencyInjection": "1.0.0-beta6",
-    "Microsoft.Net.Http.Headers": "1.0.0-beta6",
-    "Microsoft.AspNet.WebUtilities": "1.0.0-beta6",
-    "Microsoft.AspNet.Cors.Core": "1.0.0-beta6"
+    "Microsoft.AspNet.Http.Abstractions": "1.0.0-beta7",
+    "Microsoft.Framework.DependencyInjection": "1.0.0-beta7",
+    "Microsoft.Net.Http.Headers": "1.0.0-beta7",
+    "Microsoft.AspNet.WebUtilities": "1.0.0-beta7",
+    "Microsoft.AspNet.Cors.Core": "1.0.0-beta7"
   },
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-beta6"
+        "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-beta7"
       }
     },
     "dnxcore50": {
       "dependencies": {
-        "System.Collections": "4.0.10-beta-*",
-        "System.Linq": "4.0.0-beta-*",
-        "System.Threading": "4.0.10-beta-*",
-        "Microsoft.CSharp": "4.0.0-beta-*",
-        "System.Text.RegularExpressions": "4.0.10-beta-*",
-        "System.Collections.Concurrent":  "4.0.10-beta-*",
-        "System.Runtime": "4.0.20-beta-*"
+        "System.Collections": "4.0.11-beta-*",
+        "System.Linq": "4.0.1-beta-*",
+        "System.Threading": "4.0.11-beta-*",
+        "Microsoft.CSharp": "4.0.1-beta-*",
+        "System.Text.RegularExpressions": "4.0.11-beta-*",
+        "System.Collections.Concurrent":  "4.0.11-beta-*",
+        "System.Runtime": "4.0.21-beta-*"
       }
     }
   }
