@@ -3,6 +3,37 @@ Tmds.SockJS is an ASP.NET 5 implementation of the SockJS protocol. The library m
 
 AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/kpmtd98p5p4x1bd0?svg=true)](https://ci.appveyor.com/project/tmds/tmds-sockjs/branch/master)
 
+## Description
+
+### Tmds.SockJS
+
+From: https://github.com/sockjs/sockjs-client 
+> SockJS is a browser JavaScript library that provides a WebSocket-like object. SockJS gives you a coherent, cross-browser, Javascript API which creates a low latency, full duplex, cross-domain communication channel between the browser and the web server.
+
+Tmds.SockJS enables SockJS on ASP.NET5. It can be installed added as a middleware and requires no change to the WebSocket implementation. For example, if the server provides an standard websocket endpoint at '/websocket', a SockJS endpoint can be added at '/sockjs' with this one-liner:
+```C#
+app.UseSockJS("/sockjs", new SockJSOptions() { RewritePath = "/websocket" });
+```
+
+Two features of RFC6455 are not supported by SockJS (and thus by SockJS.Tmds):
+- Splitting a message into several sends (WebSocket.SendAsync: endOfMessage)
+- Sending binary messages (WebSocket.SendAsync: messageType)
+
+In practice this means: send operations are done using strings. This is okay for a lot of use-cases.
+
+### Tmds.WebSockets.Sources
+
+This source package contains a number of WebSocket extension methods. It can be used independent of Tmds.SockJS.
+
+These are the most interesting methods:
+```C#
+Task SendAsync(string)
+Task<string> ReceiveTextAsync() // returns 'null' when peer closed the WebSocket
+
+Task SendCloseAsync()
+Task ReceiveCloseAsync()
+```
+
 ## Example
 
 This example implements an 'echo' websocket service. The SockJS endpoint for the service is at the '/echo' path.
@@ -14,10 +45,14 @@ In *project.json* add Tmds.SockJS and Tmds.WebSockets.Sources to the dependencie
 		"Tmds.WebSockets.Sources": "",
 	},
 ```
+
 Inside the *Startup.cs* Configure-method we setup the SockJS end-point and implement the echo service:
 ```C#
 public void Configure(IApplicationBuilder app)
 {
+	// from Microsoft.AspNet.WebSockets.Server
+	app.UseWebSockets();
+	
 	// add a SockJS end point to the website
 	app.UseSockJS("/echo");
 
@@ -31,6 +66,10 @@ public void Configure(IApplicationBuilder app)
 			while (true)
 			{
 				string received = await ws.ReceiveTextAsync();
+				if (received == null)
+				{
+					break;
+				}
 				await ws.SendAsync(received);
 			}
 		}
@@ -48,11 +87,10 @@ public void Configure(IApplicationBuilder app)
 	});
 }
 ```
-**note** The Tmds.WebSockets library provides the WebSocket ReceiveTextAsync and SendAsync extension methods used in this example. This library can be used independent of Tmds.SockJS.
 
 ## Supported Browsers
 
-The tables below show what browsers are supported using sockjs-client v0.3.4 and Tmds.SockJS.
+The tables below show what browsers are supported using sockjs-client and Tmds.SockJS.
 ~~Strikethrough~~ is used to indicate the technique is not supported, alltough sockjs-client supports it.
 Techniques in the Streaming and Polling column are implemented in Tmds.SockJS.
 Techniques in the Websockets column are implemented in Microsoft.AspNet.WebSockets.
@@ -137,3 +175,10 @@ Http11.test_streaming | wonttest |
  | ReaderWriterTest.Reader | 
  | ReaderWriterTest.SingleByteOverflow | 
  | ReaderWriterTest.MultiByteOverflow | 
+
+
+## Alternatives
+
+### SignalR
+
+ASP.NET SignalR (http://signalr.net/) includes a mechanism for websocket emulation just like SockJS. SignalR builds on top of that to provide a bi-directional remote procedure call (RPC) channel between the client and the server. Both the cliend and server use the SignalR API. If you don't need control over the WebSocket subprotocol: use SignalR instead of SockJS.
