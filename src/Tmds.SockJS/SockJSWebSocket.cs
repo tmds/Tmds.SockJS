@@ -141,16 +141,20 @@ namespace Tmds.SockJS
                         return receiveResult;
                     }
                 }
+                if (memoryStream.Length == 0)
+                {
+                    continue;
+                }
 
                 memoryStream.Position = 0;
                 var reader = new ReceiveMessageReader(memoryStream);
                 try
                 {
-                    _receivedMessages = await reader.ReadMessages(true);
+                    _receivedMessages = await reader.ReadMessages();
                 }
                 catch
                 {
-                    Abort();
+                    await CloseAsync((WebSocketCloseStatus)3000, "Broken framing.", cancellationToken);
                     throw;
                 }
                 if (_receivedMessages.Count == 0)

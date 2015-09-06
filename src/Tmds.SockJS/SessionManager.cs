@@ -210,7 +210,7 @@ namespace Tmds.SockJS
                 }
 
                 var reader = new ReceiveMessageReader(context.Request.Body);
-                messages = await reader.ReadMessages(false);
+                messages = await reader.ReadMessages();
             }
             catch (Exception e)
             {
