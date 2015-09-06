@@ -10,7 +10,7 @@ namespace Tmds.SockJS
     {
         public SockJSOptions()
         {
-            JSClientLibraryUrl = "http://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js";
+            JSClientLibraryUrl = "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js";
             MaxResponseLength = 128 * 1024;
             UseWebSocket = true;
             SetJSessionIDCookie = false;
