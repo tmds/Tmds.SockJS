@@ -44,7 +44,7 @@ namespace Tmds.SockJS
         private Receiver _receiver;
         private SockJSOptions _options;
         private ReaderWriterLockSlim _clientLock;
-        private CancellationTokenSource _clientTimeoutCts;
+        private CancellableTimer _timeoutTimer;
         private ConcurrentQueue<PendingReceive> _receives;
         private SemaphoreSlim _receivesSem;
         private SemaphoreSlim _sendDequeueSem;
@@ -86,10 +86,14 @@ namespace Tmds.SockJS
                 return true;
             }
         }
+
+        public void ClearReceiver()
+        {
+            Volatile.Write(ref _receiver, null);
+        }
         
         public async Task ClientReceiveAsync()
         {
-            CancelClientTimeout();
             try
             {
                 if (_receiver.IsNotOpen)
@@ -109,7 +113,7 @@ namespace Tmds.SockJS
                     List<PendingSend> messages = null;
                     try
                     {
-                        PendingSend firstSend = null;
+                        PendingSend firstSend;
                         bool timeout = !(await _sendsSem.WaitAsync(_options.HeartbeatInterval, _receiver.Aborted));
                         if (_sendState == SendDisposed)
                         {
@@ -180,7 +184,6 @@ namespace Tmds.SockJS
                         if (release)
                         {
                             _sendDequeueSem.Release();
-                            release = false;
                         }
                     }
                 }
@@ -189,11 +192,6 @@ namespace Tmds.SockJS
             {
                 await HandleClientSendErrorAsync();
                 throw;
-            }
-            finally
-            {
-                ScheduleClientTimeout();
-                _receiver = null;
             }
         }
 
@@ -228,7 +226,7 @@ namespace Tmds.SockJS
             _receivesSem.Release();
         }
 
-        public async Task HandleClientSendErrorAsync()
+        private async Task HandleClientSendErrorAsync()
         {
             // no new _sends
             await _sendEnqueueSem.WaitAsync();
@@ -255,7 +253,7 @@ namespace Tmds.SockJS
             _receivesSem.Release();
         }
 
-        internal void ClientSend(List<JsonString> messages)
+        public void ClientSend(List<JsonString> messages)
         {
             if (_receiveState < ReceiveNone)
             {
@@ -268,36 +266,18 @@ namespace Tmds.SockJS
             }
         }
 
-        void CancelClientTimeout()
+        public void CancelSessionTimeout()
         {
-            if (_clientTimeoutCts != null)
-            {
-                _clientTimeoutCts.Cancel();
-                _clientTimeoutCts = null;
-            }
+            _timeoutTimer.Cancel();
+            _timeoutTimer = null;
         }
 
-        async void ScheduleClientTimeout()
+        public void ScheduleSessionTimeout(Session session, CancellableTimerCallback callback, TimeSpan dueTime)
         {
-            var clientTimeoutCts = new CancellationTokenSource();
-            _clientTimeoutCts = clientTimeoutCts;
-            try
-            {
-                await Task.Delay(_options.DisconnectTimeout, clientTimeoutCts.Token);
-            }
-            catch
-            { }
-            if (clientTimeoutCts.IsCancellationRequested)
-            {
-                return;
-            }
-            if (_sessionManager.TryRemoveSession(this, clientTimeoutCts.Token))
-            {
-                HandleClientTimedOut();
-            }
+            _timeoutTimer = CancellableTimer.Schedule(callback, session, dueTime);
         }
 
-        private async void HandleClientTimedOut()
+        public async void HandleClientTimeOut()
         {
             await _sendEnqueueSem.WaitAsync();
             if (_sendState == SendOpen)
@@ -325,7 +305,7 @@ namespace Tmds.SockJS
             _receivesSem.Release();
         }
 
-        internal async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
+        public async Task<WebSocketReceiveResult> ReceiveAsync(ArraySegment<byte> buffer, CancellationToken cancellationToken)
         {
             int oldState = Interlocked.CompareExchange(ref _receiveState, ReceiveOne, ReceiveNone);
             if (oldState == ReceiveDisposed)
@@ -348,7 +328,7 @@ namespace Tmds.SockJS
                 {
                     throw SessionWebSocket.NewDisposedException();
                 }
-                PendingReceive receive = null;
+                PendingReceive receive;
                 _receives.TryPeek(out receive);
 
                 if (receive.Type == WebSocketMessageType.Text)
@@ -407,7 +387,7 @@ namespace Tmds.SockJS
             _clientLock.ExitReadLock();
         }
 
-        internal void EnterSharedLock()
+        public void EnterSharedLock()
         {
             _clientLock.EnterReadLock();
         }

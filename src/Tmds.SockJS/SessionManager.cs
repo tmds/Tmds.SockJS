@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Net.Http.Headers;
-using Microsoft.AspNet.WebUtilities;
 using Microsoft.AspNet.Cors.Core;
 using System.Collections.Generic;
 using System.Net.WebSockets;
@@ -256,12 +255,12 @@ namespace Tmds.SockJS
 
         private Session GetSession(string sessionId)
         {
-            Session session = null;
+            Session session;
             _sessions.TryGetValue(sessionId, out session);
             if (session != null)
             {
                 session.EnterSharedLock();
-                Session check = null;
+                Session check;
                 _sessions.TryGetValue(sessionId, out check);
                 if (session == check)
                 {
@@ -289,23 +288,6 @@ namespace Tmds.SockJS
                     return Tuple.Create(newSession, true);
                 }
                 newSession.ExitExclusiveLock();
-            }
-        }
-
-        internal bool TryRemoveSession(Session session, CancellationToken ct)
-        {
-            try
-            {
-                session.EnterExclusiveLock();
-                if (ct.IsCancellationRequested)
-                {
-                    return false;
-                }
-                return _sessions.TryRemove(session.SessionId, out session);
-            }
-            finally
-            {
-                session.ExitExclusiveLock();
             }
         }
 
@@ -341,6 +323,10 @@ namespace Tmds.SockJS
             else
             {
                 bool receiverSet = session.SetReceiver(receiver);
+                if (receiverSet)
+                {
+                    session.CancelSessionTimeout();
+                }
                 session.ExitSharedLock();
                 if (!receiverSet)
                 {
@@ -349,7 +335,35 @@ namespace Tmds.SockJS
                     return;
                 }
             }
-            await session.ClientReceiveAsync();
+            try
+            {
+                await session.ClientReceiveAsync();
+            }
+            finally
+            {
+                // schedule before clear to ensure cancel is possible when receiverSet
+                session.ScheduleSessionTimeout(session, OnSessionTimeout, _options.DisconnectTimeout);
+                session.ClearReceiver();
+            }
+        }
+
+        private void OnSessionTimeout(object state, CancellableTimer timer)
+        {
+            Session session = (Session)state;
+            try
+            {
+                session.EnterExclusiveLock();
+                if (timer.IsCancelled)
+                {
+                    return;
+                }
+                _sessions.TryRemove(session.SessionId, out session);
+                session.HandleClientTimeOut();
+            }
+            finally
+            {
+                session.ExitExclusiveLock();
+            }
         }
 
         private Task HandleOptionsGetResource(HttpContext context, string session)
@@ -396,7 +410,7 @@ namespace Tmds.SockJS
         {
             AddNoCacheHeader(context);
             AddCorsHeader(context);
-            int entropy = 0;
+            int entropy;
             lock (_random)
             {
                 entropy = _random.Next();
