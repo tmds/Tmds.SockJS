@@ -298,26 +298,29 @@ namespace Tmds.SockJS
             bool newSession = getOrCreate.Item2;
             if (newSession)
             {
-                try
+                var feature = new SessionWebSocketFeature(session);
+                receiver.Context.SetFeature<IHttpWebSocketFeature>(feature);
+                receiver.Context.Request.Path = _rewritePath;
+
+                var pipeline = _next(receiver.Context); // SessionWebSocketFeature.AcceptAsync Yields
+
+                var accepted = feature.IsAcceptedPromise.Status != TaskStatus.Created;
+                if (!accepted)
                 {
-                    var feature = new SessionWebSocketFeature(session);
-                    receiver.Context.SetFeature<IHttpWebSocketFeature>(feature);
-                    receiver.Context.Request.Path = _rewritePath;
-
-                    var pipeline = _next(receiver.Context);
-
-                    Task.WaitAny(new[] { pipeline, feature.IsAcceptedPromise });
-
-                    if (feature.IsAcceptedPromise.Status == TaskStatus.Created)
-                    {
-                        _sessions.TryRemove(sessionId, out session);
-                        await pipeline;
-                        return;
-                    }
+                    Task.WaitAny(new[] {pipeline, feature.IsAcceptedPromise});
+                    accepted = feature.IsAcceptedPromise.Status != TaskStatus.Created;
                 }
-                finally
+
+                if (accepted)
                 {
                     session.ExitExclusiveLock();
+                }
+                else
+                {
+                    _sessions.TryRemove(sessionId, out session);
+                    session.ExitExclusiveLock();
+                    await pipeline;
+                    return;
                 }
             }
             else

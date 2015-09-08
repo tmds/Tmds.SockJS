@@ -31,7 +31,7 @@ namespace Tmds.SockJS
         {
             WebSocket ws = await _session.AcceptWebSocket();
             _acceptedTcs.SetResult(true);
-            await _acceptedTcs.Task;
+            await Task.Yield(); // ensure _next returns
             return ws;
         }
     }
