@@ -1,7 +1,5 @@
 {
     "webroot": "wwwroot",
-    "version": "1.0.0-*",
-
     "dependencies": {
         "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta7",
         "Microsoft.AspNet.Server.IIS": "1.0.0-beta7",
@@ -10,17 +8,14 @@
         "Microsoft.AspNet.WebSockets.Server": "1.0.0-beta7",
         "Tmds.WebSockets.Sources": "1.0.0-*"
     },
-
     "commands": {
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
         "kestrel": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.Kestrel --server.urls http://localhost:8081"
     },
-
     "frameworks": {
         "dnx451": { },
         "dnxcore50": { }
     },
-
     "publishExclude": [
         "node_modules",
         "bower_components",
