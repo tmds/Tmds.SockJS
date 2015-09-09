@@ -1,38 +1,35 @@
 ﻿{
-  "version": "1.0.0-beta7-*",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/tmds/Tmds.SockJS"
-  },
-  "description": "SockJS websocket emulation for ASP.NET 5",
-  "authors": [ "Tom Deseyn" ],
-  "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
-  "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
-  "summary": "SockJS websocket emulation for ASP.NET 5",
-  "dependencies": {
-    "Microsoft.AspNet.Http.Abstractions": "1.0.0-beta7",
-    "Microsoft.Framework.DependencyInjection": "1.0.0-beta7",
-    "Microsoft.Net.Http.Headers": "1.0.0-beta7",
-    "Microsoft.AspNet.WebUtilities": "1.0.0-beta7",
-    "Microsoft.AspNet.Cors.Core": "1.0.0-beta7"
-  },
-  "frameworks": {
-    "dnx451": {
-      "dependencies": {
-        "Microsoft.Framework.DependencyInjection.Abstractions": "1.0.0-beta7"
-      }
+    "version": "1.0.0-beta7-*",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/tmds/Tmds.SockJS"
     },
-    "dnxcore50": {
-      "dependencies": {
-        "System.Collections": "4.0.11-beta-*",
-        "System.Collections.Concurrent":  "4.0.11-beta-*",
-        "System.Linq": "4.0.1-beta-*",
-        "System.Runtime": "4.0.21-beta-*",
-        "System.Text.RegularExpressions": "4.0.11-beta-*",
-        "System.Threading": "4.0.11-beta-*",
-        "System.Threading.Timer": "4.0.1-beta-*",
-        "Microsoft.CSharp": "4.0.1-beta-*"
-      }
+    "title": "Tmds.SockJS",
+    "tags": [ "sockjs" ],
+    "description": "SockJS websocket emulation for ASP.NET 5",
+    "authors": [ "Tom Deseyn" ],
+    "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
+    "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
+    "dependencies": {
+        "Microsoft.AspNet.Http.Abstractions": "1.0.0-beta7",
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta7",
+        "Microsoft.Net.Http.Headers": "1.0.0-beta7",
+        "Microsoft.AspNet.WebUtilities": "1.0.0-beta7",
+        "Microsoft.AspNet.Cors.Core": "1.0.0-beta7"
+    },
+    "frameworks": {
+        "dnx451": { },
+        "dnxcore50": {
+            "dependencies": {
+                "System.Collections": "4.0.11-beta-*",
+                "System.Collections.Concurrent": "4.0.11-beta-*",
+                "System.Linq": "4.0.1-beta-*",
+                "System.Runtime": "4.0.21-beta-*",
+                "System.Text.RegularExpressions": "4.0.11-beta-*",
+                "System.Threading": "4.0.11-beta-*",
+                "System.Threading.Timer": "4.0.1-beta-*",
+                "Microsoft.CSharp": "4.0.1-beta-*"
+            }
+        }
     }
-  }
 }

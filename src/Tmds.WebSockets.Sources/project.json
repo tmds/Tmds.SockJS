@@ -1,29 +1,29 @@
 ﻿{
-  "version": "1.0.0-beta7-*",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/tmds/Tmds.SockJS"
-  },
-  "description": "WebSocket Extensions",
-  "shared": "*.cs",
-  "authors": [ "Tom Deseyn" ],
-  "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
-  "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
-  "summary": "WebSocket extention methods",
-  "dependencies": {
-  },
-  "frameworks" : {
-    "dnx451": { },
-    "dnxcore50" : {
-      "dependencies": {
-        "Microsoft.CSharp": "4.0.0-beta-*",
-        "System.Collections": "4.0.10-beta-*",
-        "System.Linq": "4.0.0-beta-*",
-        "System.Net.WebSockets": "4.0.0-beta-*",
-        "System.Threading": "4.0.10-beta-*",
-        "System.IO": "4.0.11-beta-*",
-        "System.Runtime": "4.0.20-beta-*"
-      }
+    "version": "1.0.0-beta7-*",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/tmds/Tmds.SockJS"
+    },
+    "title": "Tmds.WebSockets.Sources",
+    "tags": [ "websocket" ],
+    "description": "WebSocket Extensions",
+    "shared": "*.cs",
+    "authors": [ "Tom Deseyn" ],
+    "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
+    "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
+    "dependencies": { },
+    "frameworks": {
+        "dnx451": { },
+        "dnxcore50": {
+            "dependencies": {
+                "System.Collections": "4.0.10-beta-*",
+                "System.IO": "4.0.11-beta-*",
+                "System.Linq": "4.0.0-beta-*",
+                "System.Net.WebSockets": "4.0.0-beta-*",
+                "System.Runtime": "4.0.20-beta-*",
+                "System.Threading": "4.0.10-beta-*",
+                "Microsoft.CSharp": "4.0.0-beta-*"
+            }
+        }
     }
-  }
 }
