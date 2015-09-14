@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (C) 2015 Tom Deseyn
+// Licensed under GNU LGPL, Version 2.1. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,32 +11,32 @@ using System.Threading.Tasks;
 
 namespace Tmds.SockJS
 {
-    class MessageWriter
+    internal class MessageWriter
     {
         private const byte ReverseSolidusByte = (byte)'\\';
         private const byte QuotationMarkByte = (byte)'\"';
         private const byte LastControlByte = 0x1f;
-        private static readonly byte[][] ControlEscape;
-        private static readonly byte[] HtmlFileSendMessagesStart;
-        private static readonly byte[] HtmlFileSendMessagesEnd;
+        private static readonly byte[][] s_controlEscape;
+        private static readonly byte[] s_htmlFileSendMessagesStart;
+        private static readonly byte[] s_htmlFileSendMessagesEnd;
 
         static MessageWriter()
         {
-            ControlEscape = new byte[LastControlByte + 1][];
-            ControlEscape[(int)'\b'] = Encoding.UTF8.GetBytes("\\b");
-            ControlEscape[(int)'\f'] = Encoding.UTF8.GetBytes("\\f");
-            ControlEscape[(int)'\n'] = Encoding.UTF8.GetBytes("\\n");
-            ControlEscape[(int)'\r'] = Encoding.UTF8.GetBytes("\\r");
-            ControlEscape[(int)'\t'] = Encoding.UTF8.GetBytes("\\t");
+            s_controlEscape = new byte[LastControlByte + 1][];
+            s_controlEscape[(int)'\b'] = Encoding.UTF8.GetBytes("\\b");
+            s_controlEscape[(int)'\f'] = Encoding.UTF8.GetBytes("\\f");
+            s_controlEscape[(int)'\n'] = Encoding.UTF8.GetBytes("\\n");
+            s_controlEscape[(int)'\r'] = Encoding.UTF8.GetBytes("\\r");
+            s_controlEscape[(int)'\t'] = Encoding.UTF8.GetBytes("\\t");
             for (int i = 0; i <= LastControlByte; i++)
             {
-                if (ControlEscape[i] == null)
+                if (s_controlEscape[i] == null)
                 {
-                    ControlEscape[i] = Encoding.UTF8.GetBytes(string.Format("\\u00{0:x2}", i));
+                    s_controlEscape[i] = Encoding.UTF8.GetBytes(string.Format("\\u00{0:x2}", i));
                 }
             }
-            HtmlFileSendMessagesStart = Encoding.UTF8.GetBytes("<script>\np(");
-            HtmlFileSendMessagesEnd = Encoding.UTF8.GetBytes(");\n</script>\r\n");
+            s_htmlFileSendMessagesStart = Encoding.UTF8.GetBytes("<script>\np(");
+            s_htmlFileSendMessagesEnd = Encoding.UTF8.GetBytes(");\n</script>\r\n");
         }
 
         private MemoryStream _ms;
@@ -95,7 +98,7 @@ namespace Tmds.SockJS
                     {
                         if (b <= LastControlByte)
                         {
-                            _ms.Write(ControlEscape[b], 0, ControlEscape[b].Length);
+                            _ms.Write(s_controlEscape[b], 0, s_controlEscape[b].Length);
                             copyOffset = offset;
                             copyCount = 0;
                         }
@@ -186,9 +189,9 @@ namespace Tmds.SockJS
             else
             {
                 MessageWriter htmlFileWriter = new MessageWriter();
-                htmlFileWriter.WriteBytes(HtmlFileSendMessagesStart);
+                htmlFileWriter.WriteBytes(s_htmlFileSendMessagesStart);
                 htmlFileWriter.WriteJsonString(new ArraySegment<byte>(sendsSegment.Array, sendsSegment.Offset, sendsSegment.Count - 1));
-                htmlFileWriter.WriteBytes(HtmlFileSendMessagesEnd);
+                htmlFileWriter.WriteBytes(s_htmlFileSendMessagesEnd);
                 return htmlFileWriter.GetSegment();
             }
         }

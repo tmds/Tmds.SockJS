@@ -10,7 +10,7 @@ using System.Collections.Concurrent;
 
 namespace Tmds.SockJS
 {
-    class Session
+    internal class Session
     {
         private const int SendOpen = 0;
         private const int SendDisposed = -1;
@@ -91,7 +91,7 @@ namespace Tmds.SockJS
         {
             Volatile.Write(ref _receiver, null);
         }
-        
+
         public async Task ClientReceiveAsync()
         {
             try
@@ -355,7 +355,6 @@ namespace Tmds.SockJS
                         _receives.TryDequeue(out receive);
                         throw;
                     }
-
                 }
                 else // (receive.Type == WebSocketMessageType.Close)
                 {
@@ -364,7 +363,6 @@ namespace Tmds.SockJS
                     _receives.TryDequeue(out receive);
                     return result;
                 }
-
             }
             finally
             {

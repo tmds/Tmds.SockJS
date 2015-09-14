@@ -16,9 +16,9 @@ namespace Tmds.SockJS.Tests
         [Fact]
         public async Task Options()
         {
-            foreach (string suffix in new[] { "/xhr", "/xhr_send"})
+            foreach (string suffix in new[] { "/xhr", "/xhr_send" })
             {
-                await AssertOptions(BaseUrl + "/abc/abc" + suffix, new[] { "OPTIONS", "POST"});
+                await AssertOptions(BaseUrl + "/abc/abc" + suffix, new[] { "OPTIONS", "POST" });
             }
         }
 

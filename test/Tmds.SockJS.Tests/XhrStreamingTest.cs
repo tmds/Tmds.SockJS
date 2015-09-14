@@ -39,7 +39,7 @@ namespace Tmds.SockJS.Tests
 
             var sendResponse = await client.PostAsync(url + "/xhr_send", new StringContent("[\"x\"]", Encoding.UTF8, "application/json"));
             Assert.Equal(HttpStatusCode.NoContent, sendResponse.StatusCode);
-            
+
             var message = await reader.ReadLineAsync();
             Assert.Equal("a[\"x\"]", message);
 

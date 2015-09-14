@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Tmds.SockJS
 {
-    delegate Task SessionHttpContextHandler(HttpContext context, string sessionId);
+    internal delegate Task SessionHttpContextHandler(HttpContext context, string sessionId);
 }

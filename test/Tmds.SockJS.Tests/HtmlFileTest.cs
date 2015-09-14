@@ -12,11 +12,11 @@ namespace Tmds.SockJS.Tests
 {
     public class HtmlFileTest : TestWebsiteTest
     {
-        private static readonly string Head;
-        private static readonly string Open;
+        private static readonly string s_head;
+        private static readonly string s_open;
         static HtmlFileTest()
         {
-            Head =
+            s_head =
 @"<!DOCTYPE html>
 <html>
 <head>
@@ -32,7 +32,7 @@ namespace Tmds.SockJS.Tests
   </script>
 ".Replace("\r\n", "\n").Trim();
 
-            Open = "<script>\np(\"o\");\n</script>\r\n";
+            s_open = "<script>\np(\"o\");\n</script>\r\n";
         }
 
         private async Task AssertHeaderAndOpen(Stream stream)
@@ -40,18 +40,18 @@ namespace Tmds.SockJS.Tests
             var buffer = new byte[2000];
             int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
             var head = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-            Assert.True(head.StartsWith(string.Format(Head, "callback")));
+            Assert.True(head.StartsWith(string.Format(s_head, "callback")));
             Assert.True(bytesRead > 1024);
 
-            if (head.EndsWith(Open))
+            if (head.EndsWith(s_open))
             {
-                Assert.True(head.EndsWith(Open));
+                Assert.True(head.EndsWith(s_open));
             }
             else
             {
                 bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
                 var open = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Assert.Equal(Open, open);
+                Assert.Equal(s_open, open);
             }
         }
 

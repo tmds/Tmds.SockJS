@@ -11,7 +11,7 @@ namespace Tmds.SockJS.Tests
         {
             var client = CreateClient();
 
-            foreach (string url in new[] { BaseUrl, BaseUrl + "/"})
+            foreach (string url in new[] { BaseUrl, BaseUrl + "/" })
             {
                 var response = await client.GetAsync(url);
 

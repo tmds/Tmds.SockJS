@@ -57,7 +57,7 @@ namespace Tmds.SockJS.Tests
         }
         protected async Task AssertOptions(string url, IList<string> allowedMethods)
         {
-            foreach (var origin in new[] { "test", null})
+            foreach (var origin in new[] { "test", null })
             {
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Options, url);
                 request.Headers.Add(CorsConstants.AccessControlRequestMethod, string.Join(", ", allowedMethods));

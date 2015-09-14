@@ -65,6 +65,4 @@ namespace Tmds.SockJS
             }
         }
     }
-
-
 }

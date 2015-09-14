@@ -6,8 +6,8 @@ using System.Threading;
 
 namespace Tmds.SockJS
 {
-    delegate void CancellableTimerCallback(object state, CancellableTimer timer);
-    class CancellableTimer
+    internal delegate void CancellableTimerCallback(object state, CancellableTimer timer);
+    internal class CancellableTimer
     {
         private readonly CancellableTimerCallback _callback;
         private Timer _timer;

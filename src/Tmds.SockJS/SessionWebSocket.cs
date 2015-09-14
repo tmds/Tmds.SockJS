@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tmds.SockJS
 {
-    class SessionWebSocket : WebSocket
+    internal class SessionWebSocket : WebSocket
     {
         private Session _session;
         private WebSocketState _state;
@@ -17,7 +17,7 @@ namespace Tmds.SockJS
 
         public SessionWebSocket(Session session)
         {
-            this._session = session;
+            _session = session;
             _state = WebSocketState.Open;
         }
 
@@ -126,7 +126,7 @@ namespace Tmds.SockJS
             ThrowIfDisposed();
             ThrowIfInputClosed();
             ValidateSegment(buffer);
-            
+
             var result = await _session.ReceiveAsync(buffer, cancellationToken);
 
             if (result.MessageType == WebSocketMessageType.Close)
@@ -159,7 +159,7 @@ namespace Tmds.SockJS
             ThrowIfOutputClosed();
             return _session.ServerSendTextAsync(buffer, cancellationToken);
         }
-        
+
 
         private void ValidateSegment(ArraySegment<byte> buffer)
         {

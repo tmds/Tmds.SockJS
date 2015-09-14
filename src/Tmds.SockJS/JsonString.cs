@@ -5,7 +5,7 @@ using System;
 
 namespace Tmds.SockJS
 {
-    class JsonString
+    internal class JsonString
     {
         private byte[] _array;
         private int _offset;

@@ -11,18 +11,18 @@ using System.Threading.Tasks;
 
 namespace Tmds.SockJS
 {
-    class SockJSWebSocket : WebSocket
+    internal class SockJSWebSocket : WebSocket
     {
         private const int NewLine = 1;
-        private static readonly byte[] OpenBuffer;
+        private static readonly byte[] s_openBuffer;
 
         static SockJSWebSocket()
         {
-            OpenBuffer = Encoding.UTF8.GetBytes("o");
+            s_openBuffer = Encoding.UTF8.GetBytes("o");
         }
 
         private WebSocket _webSocket;
-        List<JsonString> _receivedMessages;
+        private List<JsonString> _receivedMessages;
 
         public SockJSWebSocket(WebSocket webSocket)
         {
@@ -68,7 +68,7 @@ namespace Tmds.SockJS
 
         internal Task Open(CancellationToken cancellationToken)
         {
-            return _webSocket.SendAsync(new ArraySegment<byte>(OpenBuffer), WebSocketMessageType.Text, true, cancellationToken);
+            return _webSocket.SendAsync(new ArraySegment<byte>(s_openBuffer), WebSocketMessageType.Text, true, cancellationToken);
         }
 
         public async override Task CloseAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Tmds.SockJS
 {
-    class Route
+    internal class Route
     {
         public Route(string method, int type, bool regex, string match, SessionHttpContextHandler handler)
         {

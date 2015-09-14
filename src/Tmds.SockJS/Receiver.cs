@@ -13,23 +13,23 @@ using System.IO;
 
 namespace Tmds.SockJS
 {
-    class Receiver
+    internal class Receiver
     {
-        private static readonly byte[] HeartBeatBuffer;
-        private static readonly byte[] HtmlFileHeartBeatBuffer;
-        private static readonly byte[] StreamingHeaderBuffer;
-        private static readonly byte[] OpenBuffer;
-        private static readonly byte[] HtmlFileOpenBuffer;
-        private static readonly string HtmlFileTemplate;
+        private static readonly byte[] s_heartBeatBuffer;
+        private static readonly byte[] s_htmlFileHeartBeatBuffer;
+        private static readonly byte[] s_streamingHeaderBuffer;
+        private static readonly byte[] s_openBuffer;
+        private static readonly byte[] s_htmlFileOpenBuffer;
+        private static readonly string s_htmlFileTemplate;
 
         static Receiver()
         {
-            HeartBeatBuffer = Encoding.UTF8.GetBytes("h");
-            HtmlFileHeartBeatBuffer = Encoding.UTF8.GetBytes("<script>\np(\"h\");\n</script>\r\n");
-            OpenBuffer = Encoding.UTF8.GetBytes("o\n");
-            StreamingHeaderBuffer = Encoding.UTF8.GetBytes(new string('h', 2048) + "\n");
-            HtmlFileOpenBuffer = Encoding.UTF8.GetBytes("<script>\np(\"o\");\n</script>\r\n");
-            HtmlFileTemplate =
+            s_heartBeatBuffer = Encoding.UTF8.GetBytes("h");
+            s_htmlFileHeartBeatBuffer = Encoding.UTF8.GetBytes("<script>\np(\"h\");\n</script>\r\n");
+            s_openBuffer = Encoding.UTF8.GetBytes("o\n");
+            s_streamingHeaderBuffer = Encoding.UTF8.GetBytes(new string('h', 2048) + "\n");
+            s_htmlFileOpenBuffer = Encoding.UTF8.GetBytes("<script>\np(\"o\");\n</script>\r\n");
+            s_htmlFileTemplate =
 @"<!DOCTYPE html>
 <html>
 <head>
@@ -44,10 +44,10 @@ namespace Tmds.SockJS
     window.onload = function() {{c.stop();}};
   </script>
 ".Replace("\r\n", "\n");
-            HtmlFileTemplate += new string(' ', 1024 - HtmlFileTemplate.Length + 14 - 1);
-            HtmlFileTemplate += "\r\n\r\n";
+            s_htmlFileTemplate += new string(' ', 1024 - s_htmlFileTemplate.Length + 14 - 1);
+            s_htmlFileTemplate += "\r\n\r\n";
         }
-        enum State
+        private enum State
         {
             NotOpen,
             Open,
@@ -80,7 +80,7 @@ namespace Tmds.SockJS
         public HttpContext Context { get { return _context; } }
         public int BytesSent { get { return _bytesSent; } }
         public CancellationToken Aborted { get { return _context.RequestAborted; } }
-        
+
         public async Task Open(bool openSession = false)
         {
             _state = State.Open;
@@ -106,11 +106,11 @@ namespace Tmds.SockJS
         {
             if (_type == ReceiverType.XhrStreaming)
             {
-                await SendRawAsync(RawSendType.Header, StreamingHeaderBuffer, CancellationToken.None);
+                await SendRawAsync(RawSendType.Header, s_streamingHeaderBuffer, CancellationToken.None);
             }
             else if (_type == ReceiverType.HtmlFile)
             {
-                var buffer = Encoding.UTF8.GetBytes(string.Format(HtmlFileTemplate, _htmlFileCallback));
+                var buffer = Encoding.UTF8.GetBytes(string.Format(s_htmlFileTemplate, _htmlFileCallback));
                 await SendRawAsync(RawSendType.Header, buffer, CancellationToken.None);
             }
         }
@@ -119,11 +119,11 @@ namespace Tmds.SockJS
         {
             if (_type == ReceiverType.HtmlFile)
             {
-                await SendRawAsync(RawSendType.Other, HtmlFileOpenBuffer, CancellationToken.None);
+                await SendRawAsync(RawSendType.Other, s_htmlFileOpenBuffer, CancellationToken.None);
             }
             else
             {
-                await SendRawAsync(RawSendType.Other, OpenBuffer, CancellationToken.None);
+                await SendRawAsync(RawSendType.Other, s_openBuffer, CancellationToken.None);
             }
         }
         public Task SendCloseAsync(byte[] buffer, CancellationToken cancellationToken)
@@ -172,11 +172,11 @@ namespace Tmds.SockJS
         {
             if (_type == ReceiverType.HtmlFile)
             {
-                return SendRawAsync(RawSendType.Other, HtmlFileHeartBeatBuffer, CancellationToken.None);
+                return SendRawAsync(RawSendType.Other, s_htmlFileHeartBeatBuffer, CancellationToken.None);
             }
             else
             {
-                return SendRawAsync(RawSendType.Other, HeartBeatBuffer, CancellationToken.None);
+                return SendRawAsync(RawSendType.Other, s_heartBeatBuffer, CancellationToken.None);
             }
         }
 
@@ -203,7 +203,6 @@ namespace Tmds.SockJS
                     if (!isCancellationException)
                     {
                         send.CompleteException(e);
-
                     }
                     else if (send.CancellationToken.IsCancellationRequested)
                     {
@@ -213,7 +212,7 @@ namespace Tmds.SockJS
                     {
                         if (ioException == null)
                         {
-                             ioException = new IOException("Operation failed because another operation was cancelled", e);
+                            ioException = new IOException("Operation failed because another operation was cancelled", e);
                         }
                         send.CompleteException(ioException);
                     }
@@ -221,7 +220,7 @@ namespace Tmds.SockJS
                 throw;
             }
         }
-        
+
         private void ThrowIfNotOpen()
         {
             if (_state != State.Open)

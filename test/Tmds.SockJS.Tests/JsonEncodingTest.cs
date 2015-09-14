@@ -102,6 +102,5 @@ namespace Tmds.SockJS.Tests
             var decoded = NewtonsoftDecode(content.Substring(2, content.Length - 4));
             Assert.Equal(_clientKillerStringEscDecoded, decoded);
         }
-
     }
 }

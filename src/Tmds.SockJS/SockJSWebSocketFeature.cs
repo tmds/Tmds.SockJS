@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Tmds.SockJS
 {
-    class SockJSWebSocketFeature : IHttpWebSocketFeature
+    internal class SockJSWebSocketFeature : IHttpWebSocketFeature
     {
         private IHttpWebSocketFeature _feature;
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Tmds.SockJS.Tests
 {
-    class Info
+    internal class Info
     {
         public bool websocket { get; set; }
         public bool cookie_needed { get; set; }

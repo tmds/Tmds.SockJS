@@ -5,7 +5,7 @@ using System.Net.WebSockets;
 
 namespace Tmds.SockJS
 {
-    class PendingReceive
+    internal class PendingReceive
     {
         public PendingReceive(JsonString textMessage)
         {

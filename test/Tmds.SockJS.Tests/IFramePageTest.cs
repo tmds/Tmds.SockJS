@@ -16,7 +16,7 @@ namespace Tmds.SockJS.Tests
             return Verify(BaseUrl + "/iframe.html");
         }
 
-        private static readonly string IFrameBody =
+        private static readonly string s_iFrameBody =
             @"^<!DOCTYPE html>
 <html>
 <head>
@@ -55,7 +55,7 @@ namespace Tmds.SockJS.Tests
 
             string content = await response.Content.ReadAsStringAsync();
 
-            Match match = Regex.Match(content, IFrameBody);
+            Match match = Regex.Match(content, s_iFrameBody);
             Assert.True(match.Success);
             string sockjsUrl = match.Groups["sockjs_url"].Value;
             Assert.True(sockjsUrl.StartsWith("/") || sockjsUrl.StartsWith("http"));

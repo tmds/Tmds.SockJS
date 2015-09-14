@@ -7,10 +7,10 @@ using System.Net.WebSockets;
 
 namespace Tmds.SockJS
 {
-    class SessionWebSocketFeature : IHttpWebSocketFeature
+    internal class SessionWebSocketFeature : IHttpWebSocketFeature
     {
-        Session _session;
-        TaskCompletionSource<bool> _acceptedTcs;
+        private Session _session;
+        private TaskCompletionSource<bool> _acceptedTcs;
         public SessionWebSocketFeature(Session session)
         {
             _session = session;

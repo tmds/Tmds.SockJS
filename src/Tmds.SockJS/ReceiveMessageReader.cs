@@ -10,19 +10,19 @@ namespace Tmds.SockJS
 {
     internal class ReceiveMessageReader
     {
-        private Stream body;
+        private Stream _body;
 
         public ReceiveMessageReader(Stream body)
         {
-            this.body = body;
+            _body = body;
         }
 
         public async Task<List<JsonString>> ReadMessages()
         {
-            var messages = new List<JsonString> ();
+            var messages = new List<JsonString>();
             using (var memoryStream = new MemoryStream())
             {
-                await body.CopyToAsync(memoryStream);
+                await _body.CopyToAsync(memoryStream);
 #if DNXCORE50
                 ArraySegment<byte> segment;
                 memoryStream.TryGetBuffer(out segment);

@@ -21,7 +21,7 @@ namespace Tmds.SockJS
 
         public string JSClientLibraryUrl { get; set; }
 
-        public int MaxResponseLength{ get; set; }
+        public int MaxResponseLength { get; set; }
 
         public bool UseWebSocket { get; set; }
 
