@@ -15,12 +15,6 @@ Tmds.SockJS enables SockJS on ASP.NET5. It can be installed added as a middlewar
 app.UseSockJS("/sockjs", new SockJSOptions() { RewritePath = "/websocket" });
 ```
 
-Two features of RFC6455 are not supported by SockJS (and thus by SockJS.Tmds):
-- Splitting a message into several sends (WebSocket.SendAsync: endOfMessage)
-- Sending binary messages (WebSocket.SendAsync: messageType)
-
-In practice this means: send operations are done using strings. This is okay for a lot of use-cases.
-
 ### Tmds.WebSockets.Sources
 
 This source package contains a number of WebSocket extension methods. It can be used independent of Tmds.SockJS.
@@ -31,7 +25,6 @@ Task SendAsync(string)
 Task<string> ReceiveTextAsync() // returns 'null' when peer closed the WebSocket
 
 Task SendCloseAsync()
-Task ReceiveCloseAsync()
 ```
 
 ## Example
@@ -111,8 +104,16 @@ Safari 5        | ~~hixie-76~~         | xhr-streaming   | xhr-polling
 Opera 10.70+    | no               | ~~iframe-eventsource~~ | iframe-xhr-polling
 ~~Konqueror~~       | no               | no          | ~~jsonp-polling~~
 
+## SockJS Limitations
+
+The SockJS protocol does not allow to emulate all features of standard websockets (RFC6455):
+- Splitting a message into several sends (WebSocket.SendAsync: endOfMessage)
+- Sending binary messages (WebSocket.SendAsync: messageType)
+- Receive close parameters (Tmds.SockJS will provide a close message when the session timed out)
+- Select a Subprotocol (WebSocket.Protocol equals string.Empty)
+
 ## Alternatives
 
 ### SignalR
 
-ASP.NET SignalR (http://signalr.net/) includes a mechanism for websocket emulation just like SockJS. SignalR builds on top of that to provide a bi-directional remote procedure call (RPC) channel between the client and the server. Both the cliend and server use the SignalR API. If you don't need control over the WebSocket subprotocol: use SignalR instead of SockJS.
+ASP.NET SignalR (http://signalr.net/) includes a mechanism for websocket emulation just like SockJS. SignalR builds on top of that to provide a bi-directional remote procedure call (RPC) channel between the client and the server. Both the cliend and server use the SignalR API. If you don't need control over the WebSocket subprotocol: use SignalR instead of Tmds.SockJS.
