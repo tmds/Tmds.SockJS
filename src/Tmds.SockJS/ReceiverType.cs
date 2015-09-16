@@ -1,5 +1,5 @@
-﻿// Copyright (C) 2015 Tom Deseyn
-// Licensed under GNU LGPL, Version 2.1. See LICENSE in the project root for license information.
+﻿// Copyright (C) 2015 Tom Deseyn. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System;
 using System.Collections.Generic;
