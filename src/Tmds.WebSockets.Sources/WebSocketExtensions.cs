@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tmds.WebSockets
 {
-    public static class WebSocketExtensions
+    internal static class WebSocketExtensions
     {
         public static async Task<string> ReceiveTextAsync(this WebSocket webSocket, CancellationToken cancellationToken = default(CancellationToken))
         {
