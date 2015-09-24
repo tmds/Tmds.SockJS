@@ -11,10 +11,10 @@ namespace Tmds.SockJS
     {
         private Session _session;
         private TaskCompletionSource<bool> _acceptedTcs;
-        public SessionWebSocketFeature(Session session)
+        public SessionWebSocketFeature(TaskCompletionSource<bool> completionSource, Session session)
         {
             _session = session;
-            _acceptedTcs = new TaskCompletionSource<bool>();
+            _acceptedTcs = completionSource;
         }
 
         public Task IsAcceptedPromise { get { return _acceptedTcs.Task; } }
@@ -29,10 +29,15 @@ namespace Tmds.SockJS
 
         public async Task<WebSocket> AcceptAsync(WebSocketAcceptContext context)
         {
-            WebSocket ws = await _session.AcceptWebSocket();
-            _acceptedTcs.SetResult(true);
-            await Task.Yield(); // ensure _next returns
-            return ws;
+            try
+            {
+                WebSocket ws = await _session.AcceptWebSocket();
+                return ws;
+            }
+            finally
+            {
+                _acceptedTcs.SetResult(true);
+            }
         }
     }
 }

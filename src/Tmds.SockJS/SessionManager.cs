@@ -219,7 +219,7 @@ namespace Tmds.SockJS
             }
 
             Session session = GetSession(sessionId);
-            if (session == null)
+            if (session == null || !session.IsAccepted)
             {
                 await HandleNotFound(context);
                 return;
@@ -281,13 +281,11 @@ namespace Tmds.SockJS
                     return Tuple.Create(session, false);
                 }
                 Session newSession = new Session(this, sessionId, receiver, _options);
-                newSession.EnterExclusiveLock();
                 Session check = _sessions.GetOrAdd(sessionId, newSession);
                 if (check == newSession)
                 {
                     return Tuple.Create(newSession, true);
                 }
-                newSession.ExitExclusiveLock();
             }
         }
 
@@ -298,28 +296,28 @@ namespace Tmds.SockJS
             bool newSession = getOrCreate.Item2;
             if (newSession)
             {
-                var feature = new SessionWebSocketFeature(session);
+                TaskCompletionSource<bool> acceptCompletionSource = new TaskCompletionSource<bool>();
+                var feature = new SessionWebSocketFeature(acceptCompletionSource, session);
                 receiver.Context.SetFeature<IHttpWebSocketFeature>(feature);
                 receiver.Context.Request.Path = _rewritePath;
 
-                var pipeline = _next(receiver.Context); // SessionWebSocketFeature.AcceptAsync Yields
+                var wsHandler = Task.Factory.StartNew(async () =>
+                {
+                    try
+                    {
+                        await _next(receiver.Context);
+                        acceptCompletionSource.TrySetResult(false);
+                    }
+                    catch
+                    {
+                        acceptCompletionSource.TrySetResult(false);
+                    }
+                });
 
-                var accepted = feature.IsAcceptedPromise.Status != TaskStatus.Created;
+                bool accepted = await acceptCompletionSource.Task;
                 if (!accepted)
                 {
-                    Task.WaitAny(new[] { pipeline, feature.IsAcceptedPromise });
-                    accepted = feature.IsAcceptedPromise.Status != TaskStatus.Created;
-                }
-
-                if (accepted)
-                {
-                    session.ExitExclusiveLock();
-                }
-                else
-                {
                     _sessions.TryRemove(sessionId, out session);
-                    session.ExitExclusiveLock();
-                    await pipeline;
                     return;
                 }
             }

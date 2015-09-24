@@ -21,8 +21,7 @@ namespace Tmds.SockJS
         private const int ReceiveOne = 1;
         private const int ReceiveDisposed = -1;
         private const int ReceiveCloseReceived = -2;
-
-
+        
         public static readonly byte[] DisposeCloseBuffer;
         public static readonly byte[] SendErrorCloseBuffer;
         public static readonly PendingReceive CloseSentPendingReceive;
@@ -54,8 +53,11 @@ namespace Tmds.SockJS
         private volatile byte[] _closeMessage;
         private int _sendState; // use _sendEnqueueSem to synchronize
         private volatile int _receiveState;
+        private bool _isAccepted;
 
         public string SessionId { get { return _sessionId; } }
+
+        public bool IsAccepted { get { return _isAccepted; } }
 
         public Session(SessionManager sessionContainer, string sessionId, Receiver receiver, SockJSOptions options)
         {
@@ -444,10 +446,18 @@ namespace Tmds.SockJS
 
         public async Task<WebSocket> AcceptWebSocket()
         {
-            await _receiver.Open(true);
-
-            _socket = new SessionWebSocket(this);
-            return _socket;
+            try
+            {
+                _isAccepted = true;
+                await _receiver.OpenSession();
+                _socket = new SessionWebSocket(this);
+                return _socket;
+            }
+            catch
+            {
+                await HandleClientSendErrorAsync();
+                throw;
+            }
         }
     }
 }

@@ -81,7 +81,7 @@ namespace Tmds.SockJS
         public int BytesSent { get { return _bytesSent; } }
         public CancellationToken Aborted { get { return _context.RequestAborted; } }
 
-        public async Task Open(bool openSession = false)
+        public async Task Open()
         {
             _state = State.Open;
 
@@ -94,16 +94,6 @@ namespace Tmds.SockJS
                 _context.Response.ContentType = "application/javascript; charset=UTF-8";
             }
 
-            await SendHeaderAsync();
-
-            if (openSession)
-            {
-                await SendOpenAsync();
-            }
-        }
-
-        private async Task SendHeaderAsync()
-        {
             if (_type == ReceiverType.XhrStreaming)
             {
                 await SendRawAsync(RawSendType.Header, s_streamingHeaderBuffer, CancellationToken.None);
@@ -115,8 +105,10 @@ namespace Tmds.SockJS
             }
         }
 
-        private async Task SendOpenAsync()
+        public async Task OpenSession()
         {
+            await Open();
+
             if (_type == ReceiverType.HtmlFile)
             {
                 await SendRawAsync(RawSendType.Other, s_htmlFileOpenBuffer, CancellationToken.None);
@@ -126,6 +118,7 @@ namespace Tmds.SockJS
                 await SendRawAsync(RawSendType.Other, s_openBuffer, CancellationToken.None);
             }
         }
+
         public Task SendCloseAsync(byte[] buffer, CancellationToken cancellationToken)
         {
             return SendRawAsync(RawSendType.Close, MessageWriter.CreateCloseMessage(_type, buffer), cancellationToken);
@@ -135,9 +128,13 @@ namespace Tmds.SockJS
         {
             return SendRawAsync(type, new ArraySegment<byte>(buffer), cancellationToken);
         }
+
         private async Task SendRawAsync(RawSendType type, ArraySegment<byte> buffer, CancellationToken cancellationToken)
         {
-            ThrowIfNotOpen();
+            if (_state != State.Open)
+            {
+                throw new InvalidOperationException("Cannot send on closed receiver");
+            }
 
             if (buffer.Count == 0)
             {
@@ -180,7 +177,7 @@ namespace Tmds.SockJS
             }
         }
 
-        internal async Task SendMessages(List<PendingSend> sends)
+        public async Task SendMessages(List<PendingSend> sends)
         {
             var cts = CancellationTokenSource.CreateLinkedTokenSource(sends.Select(send => send.CancellationToken).ToArray());
 
@@ -218,14 +215,6 @@ namespace Tmds.SockJS
                     }
                 }
                 throw;
-            }
-        }
-
-        private void ThrowIfNotOpen()
-        {
-            if (_state != State.Open)
-            {
-                throw new InvalidOperationException("Cannot send on closed receiver");
             }
         }
     }
