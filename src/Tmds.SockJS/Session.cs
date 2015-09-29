@@ -51,9 +51,9 @@ namespace Tmds.SockJS
         private SemaphoreSlim _sendEnqueueSem;
         private ConcurrentQueue<PendingSend> _sends;
         private volatile byte[] _closeMessage;
-        private int _sendState; // use _sendEnqueueSem to synchronize
+        private volatile int _sendState;
         private volatile int _receiveState;
-        private bool _isAccepted;
+        private volatile bool _isAccepted;
 
         public string SessionId { get { return _sessionId; } }
 
