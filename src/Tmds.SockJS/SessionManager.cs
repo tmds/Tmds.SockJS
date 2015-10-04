@@ -90,49 +90,49 @@ namespace Tmds.SockJS
 
             _routes = new List<Route>(new[]
             {
-                new Route("GET", TypeEmpty, false, "", HandleGreeting),
-                new Route("GET", TypeTop, true, "iframe[0-9-.a-z_]*.html", HandleIFrame),
-                new Route("GET", TypeTop, false, "info", HandleInfo),
-                new Route("OPTIONS", TypeTop, false, "info", HandleOptionsGetResource),
-                new Route("GET", TypeSession, false, "jsonp", HandleJsonp),
-                new Route("POST", TypeSession, false, "jsonp_send", HandleJsonpSend),
-                new Route("POST", TypeSession, false, "xhr", HandleXhr),
-                new Route("OPTIONS", TypeSession, false, "xhr", HandleOptionsPostResource),
-                new Route("POST", TypeSession, false, "xhr_send", HandleXhrSend),
-                new Route("OPTIONS", TypeSession, false, "xhr_send", HandleOptionsPostResource),
-                new Route("POST", TypeSession, false, "xhr_streaming", HandleXhrStreaming),
-                new Route("OPTIONS", TypeSession, false, "xhr_streaming", HandleOptionsPostResource),
-                new Route("GET", TypeSession, false, "eventsource", HandleEventSource),
-                new Route("GET", TypeSession, false, "htmlfile", HandleHtmlFile),
+                new Route("GET", TypeEmpty, false, "", HandleGreetingAsync),
+                new Route("GET", TypeTop, true, "iframe[0-9-.a-z_]*.html", HandleIFrameAsync),
+                new Route("GET", TypeTop, false, "info", HandleInfoAsync),
+                new Route("OPTIONS", TypeTop, false, "info", HandleOptionsGetResourceAsync),
+                new Route("GET", TypeSession, false, "jsonp", HandleJsonpAsync),
+                new Route("POST", TypeSession, false, "jsonp_send", HandleJsonpSendAsync),
+                new Route("POST", TypeSession, false, "xhr", HandleXhrAsync),
+                new Route("OPTIONS", TypeSession, false, "xhr", HandleOptionsPostResourceAsync),
+                new Route("POST", TypeSession, false, "xhr_send", HandleXhrSendAsync),
+                new Route("OPTIONS", TypeSession, false, "xhr_send", HandleOptionsPostResourceAsync),
+                new Route("POST", TypeSession, false, "xhr_streaming", HandleXhrStreamingAsync),
+                new Route("OPTIONS", TypeSession, false, "xhr_streaming", HandleOptionsPostResourceAsync),
+                new Route("GET", TypeSession, false, "eventsource", HandleEventSourceAsync),
+                new Route("GET", TypeSession, false, "htmlfile", HandleHtmlFileAsync),
             });
             if (_options.UseWebSocket)
             {
                 _routes.AddRange(new[] {
-                    new Route("GET", TypeSession, false, "websocket", HandleSockJSWebSocket),
-                    new Route("GET", TypeTop, false, "websocket", HandleWebSocket),
+                    new Route("GET", TypeSession, false, "websocket", HandleSockJSWebSocketAsync),
+                    new Route("GET", TypeTop, false, "websocket", HandleWebSocketAsync),
                 });
             }
             else
             {
                 _routes.AddRange(new[] {
-                    new Route("GET", TypeSession, false, "websocket", HandleNoWebSocket),
-                    new Route("GET", TypeTop, false, "websocket", HandleNoWebSocket),
+                    new Route("GET", TypeSession, false, "websocket", HandleNoWebSocketAsync),
+                    new Route("GET", TypeTop, false, "websocket", HandleNoWebSocketAsync),
                 });
             }
         }
 
-        private Task HandleNoWebSocket(HttpContext context, string sessionId)
+        private Task HandleNoWebSocketAsync(HttpContext context, string sessionId)
         {
             AddCachingHeader(context);
-            return HandleNotFound(context);
+            return HandleNotFoundAsync(context);
         }
 
-        private Task HandleSockJSWebSocket(HttpContext context, string sessionId)
+        private Task HandleSockJSWebSocketAsync(HttpContext context, string sessionId)
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                return ExposeText(context, "Not a valid websocket request");
+                return ExposeTextAsync(context, "Not a valid websocket request");
             }
 
             var feature = new SockJSWebSocketFeature(context.GetFeature<IHttpWebSocketFeature>());
@@ -142,33 +142,33 @@ namespace Tmds.SockJS
             return _next(context);
         }
 
-        private Task HandleWebSocket(HttpContext context, string sessionId)
+        private Task HandleWebSocketAsync(HttpContext context, string sessionId)
         {
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                return ExposeText(context, "Not a valid websocket request");
+                return ExposeTextAsync(context, "Not a valid websocket request");
             }
             context.Request.Path = _rewritePath;
             return _next(context);
         }
 
-        private Task HandleJsonpSend(HttpContext context, string sessionId)
+        private Task HandleJsonpSendAsync(HttpContext context, string sessionId)
         {
             throw new NotImplementedException();
         }
 
-        private Task HandleJsonp(HttpContext context, string sessionId)
+        private Task HandleJsonpAsync(HttpContext context, string sessionId)
         {
             throw new NotImplementedException();
         }
 
-        private Task HandleEventSource(HttpContext context, string sessionId)
+        private Task HandleEventSourceAsync(HttpContext context, string sessionId)
         {
             throw new NotImplementedException();
         }
 
-        private Task HandleHtmlFile(HttpContext context, string sessionId)
+        private Task HandleHtmlFileAsync(HttpContext context, string sessionId)
         {
             AddSessionCookie(context);
             AddNoCacheHeader(context);
@@ -190,10 +190,10 @@ namespace Tmds.SockJS
             }
 
             var receiver = new Receiver(context, ReceiverType.HtmlFile, _options.MaxResponseLength, htmlFileCallback);
-            return HandleReceiver(sessionId, receiver);
+            return HandleReceiverAsync(sessionId, receiver);
         }
 
-        private async Task HandleXhrSend(HttpContext context, string sessionId)
+        private async Task HandleXhrSendAsync(HttpContext context, string sessionId)
         {
             AddSessionCookie(context);
             AddNoCacheHeader(context);
@@ -221,7 +221,7 @@ namespace Tmds.SockJS
             Session session = GetSession(sessionId);
             if (session == null || !session.IsAccepted)
             {
-                await HandleNotFound(context);
+                await HandleNotFoundAsync(context);
                 return;
             }
 
@@ -230,27 +230,27 @@ namespace Tmds.SockJS
 
             context.Response.ContentType = "text/plain; charset=UTF-8";
             context.Response.StatusCode = StatusCodes.Status204NoContent;
-            await ExposeNothing(context);
+            await ExposeNothingAsync(context);
         }
 
-        private Task HandleXhrStreaming(HttpContext context, string sessionId)
+        private Task HandleXhrStreamingAsync(HttpContext context, string sessionId)
         {
             AddSessionCookie(context);
             AddNoCacheHeader(context);
             AddCorsHeader(context);
 
             var receiver = new Receiver(context, ReceiverType.XhrStreaming, _options.MaxResponseLength, null);
-            return HandleReceiver(sessionId, receiver);
+            return HandleReceiverAsync(sessionId, receiver);
         }
 
-        private Task HandleXhr(HttpContext context, string sessionId)
+        private Task HandleXhrAsync(HttpContext context, string sessionId)
         {
             AddSessionCookie(context);
             AddNoCacheHeader(context);
             AddCorsHeader(context);
 
             var receiver = new Receiver(context, ReceiverType.XhrPolling, _options.MaxResponseLength, null);
-            return HandleReceiver(sessionId, receiver);
+            return HandleReceiverAsync(sessionId, receiver);
         }
 
         private Session GetSession(string sessionId)
@@ -289,7 +289,7 @@ namespace Tmds.SockJS
             }
         }
 
-        private async Task HandleReceiver(string sessionId, Receiver receiver)
+        private async Task HandleReceiverAsync(string sessionId, Receiver receiver)
         {
             var getOrCreate = GetOrCreateSession(sessionId, receiver);
             Session session = getOrCreate.Item1;
@@ -331,7 +331,7 @@ namespace Tmds.SockJS
                 session.ExitSharedLock();
                 if (!receiverSet)
                 {
-                    await receiver.Open();
+                    await receiver.OpenAsync();
                     await receiver.SendCloseAsync(s_otherReceiverCloseMessage, CancellationToken.None);
                     return;
                 }
@@ -367,7 +367,7 @@ namespace Tmds.SockJS
             }
         }
 
-        private Task HandleOptionsGetResource(HttpContext context, string session)
+        private Task HandleOptionsGetResourceAsync(HttpContext context, string session)
         {
             AddSessionCookie(context);
             AddCorsHeader(context);
@@ -377,10 +377,10 @@ namespace Tmds.SockJS
             context.Response.Headers.Add(CorsConstants.AccessControlMaxAge, s_oneYearAccessControlMaxAge);
 
             context.Response.StatusCode = StatusCodes.Status204NoContent;
-            return ExposeNothing(context);
+            return ExposeNothingAsync(context);
         }
 
-        private Task HandleOptionsPostResource(HttpContext context, string session)
+        private Task HandleOptionsPostResourceAsync(HttpContext context, string session)
         {
             AddSessionCookie(context);
             AddCorsHeader(context);
@@ -390,10 +390,10 @@ namespace Tmds.SockJS
             context.Response.Headers.Add(CorsConstants.AccessControlMaxAge, s_oneYearAccessControlMaxAge);
 
             context.Response.StatusCode = StatusCodes.Status204NoContent;
-            return ExposeNothing(context);
+            return ExposeNothingAsync(context);
         }
 
-        private Task ExposeNothing(HttpContext context)
+        private Task ExposeNothingAsync(HttpContext context)
         {
             return Task.FromResult<bool>(true);
         }
@@ -407,7 +407,7 @@ namespace Tmds.SockJS
             }
         }
 
-        private Task HandleInfo(HttpContext context, string session)
+        private Task HandleInfoAsync(HttpContext context, string session)
         {
             AddNoCacheHeader(context);
             AddCorsHeader(context);
@@ -422,10 +422,10 @@ namespace Tmds.SockJS
                         (_options.SetJSessionIDCookie ? "true" : "false"),
                         entropy
                         );
-            return ExposeJson(context, info);
+            return ExposeJsonAsync(context, info);
         }
 
-        private Task HandleIFrame(HttpContext context, string session)
+        private Task HandleIFrameAsync(HttpContext context, string session)
         {
             if (_iframeETag.Equals(context.Request.Headers.Get(HeaderNames.IfNoneMatch)))
             {
@@ -434,7 +434,7 @@ namespace Tmds.SockJS
             }
             AddCachingHeader(context);
             context.Response.Headers.Add(HeaderNames.ETag, new[] { _iframeETag });
-            return ExposeHtml(context, _iframeContent);
+            return ExposeHtmlAsync(context, _iframeContent);
         }
 
         private void AddCachingHeader(HttpContext context)
@@ -443,22 +443,22 @@ namespace Tmds.SockJS
             context.Response.Headers.Add(HeaderNames.Expires, new[] { DateTime.UtcNow.AddYears(1).ToString("R") });
         }
 
-        private Task ExposeHtml(HttpContext context, string content)
+        private Task ExposeHtmlAsync(HttpContext context, string content)
         {
-            return Expose(context, "text/html", content);
+            return ExposeAsync(context, "text/html", content);
         }
 
-        private Task ExposeText(HttpContext context, string content)
+        private Task ExposeTextAsync(HttpContext context, string content)
         {
-            return Expose(context, "text/plain", content);
+            return ExposeAsync(context, "text/plain", content);
         }
 
-        private Task ExposeJson(HttpContext context, string content)
+        private Task ExposeJsonAsync(HttpContext context, string content)
         {
-            return Expose(context, "application/json", content);
+            return ExposeAsync(context, "application/json", content);
         }
 
-        private Task Expose(HttpContext context, string contentType, string content)
+        private Task ExposeAsync(HttpContext context, string contentType, string content)
         {
             context.Response.ContentType = contentType + ";charset=UTF-8";
 
@@ -468,9 +468,9 @@ namespace Tmds.SockJS
             return context.Response.Body.WriteAsync(data, 0, data.Length);
         }
 
-        private Task HandleGreeting(HttpContext context, string session)
+        private Task HandleGreetingAsync(HttpContext context, string session)
         {
-            return ExposeText(context, "Welcome to SockJS!\n");
+            return ExposeTextAsync(context, "Welcome to SockJS!\n");
         }
 
         public string CalculateETag(string input)
@@ -543,22 +543,22 @@ namespace Tmds.SockJS
             if (pathMatch)
             {
                 string methods = string.Join(", ", _routes.Where(route => Matches(match, route)).Select(route => route.Method));
-                return HandleNotAllowed(context, methods);
+                return HandleNotAllowedAsync(context, methods);
             }
-            return HandleNotFound(context);
+            return HandleNotFoundAsync(context);
         }
 
-        private Task HandleNotAllowed(HttpContext context, string methods)
+        private Task HandleNotAllowedAsync(HttpContext context, string methods)
         {
             context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
             context.Response.Headers.Add(HeaderNames.Allow, new string[] { methods });
-            return ExposeNothing(context);
+            return ExposeNothingAsync(context);
         }
 
-        private Task HandleNotFound(HttpContext context)
+        private Task HandleNotFoundAsync(HttpContext context)
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
-            return ExposeNothing(context);
+            return ExposeNothingAsync(context);
         }
 
         private void AddNoCacheHeader(HttpContext context)

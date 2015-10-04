@@ -28,7 +28,7 @@ namespace Tmds.SockJS
         public async Task<WebSocket> AcceptAsync(WebSocketAcceptContext context)
         {
             var socket = new SockJSWebSocket(await _feature.AcceptAsync(context));
-            await socket.Open(CancellationToken.None);
+            await socket.OpenAsync(CancellationToken.None);
             return socket;
         }
     }

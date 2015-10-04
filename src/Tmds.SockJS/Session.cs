@@ -100,7 +100,7 @@ namespace Tmds.SockJS
             {
                 if (_receiver.IsNotOpen)
                 {
-                    await _receiver.Open();
+                    await _receiver.OpenAsync();
                 }
                 while (!_receiver.IsClosed)
                 {
@@ -124,7 +124,7 @@ namespace Tmds.SockJS
                         if (timeout)
                         {
                             // heartbeat
-                            await _receiver.SendHeartBeat();
+                            await _receiver.SendHeartBeatAsync();
                             continue;
                         }
                         _sends.TryDequeue(out firstSend);
@@ -162,7 +162,7 @@ namespace Tmds.SockJS
                             }
                             _sendDequeueSem.Release();
                             release = false;
-                            await _receiver.SendMessages(messages);
+                            await _receiver.SendMessagesAsync(messages);
                         }
                     }
                     catch (ObjectDisposedException) // SendDisposed
@@ -449,7 +449,7 @@ namespace Tmds.SockJS
             try
             {
                 _isAccepted = true;
-                await _receiver.OpenSession();
+                await _receiver.OpenSessionAsync();
                 _socket = new SessionWebSocket(this);
                 return _socket;
             }

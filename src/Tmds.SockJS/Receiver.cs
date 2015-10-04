@@ -81,7 +81,7 @@ namespace Tmds.SockJS
         public int BytesSent { get { return _bytesSent; } }
         public CancellationToken Aborted { get { return _context.RequestAborted; } }
 
-        public async Task Open()
+        public async Task OpenAsync()
         {
             _state = State.Open;
 
@@ -105,9 +105,9 @@ namespace Tmds.SockJS
             }
         }
 
-        public async Task OpenSession()
+        public async Task OpenSessionAsync()
         {
-            await Open();
+            await OpenAsync();
 
             if (_type == ReceiverType.HtmlFile)
             {
@@ -165,7 +165,7 @@ namespace Tmds.SockJS
             }
         }
 
-        public Task SendHeartBeat()
+        public Task SendHeartBeatAsync()
         {
             if (_type == ReceiverType.HtmlFile)
             {
@@ -177,7 +177,7 @@ namespace Tmds.SockJS
             }
         }
 
-        public async Task SendMessages(List<PendingSend> sends)
+        public async Task SendMessagesAsync(List<PendingSend> sends)
         {
             var cts = CancellationTokenSource.CreateLinkedTokenSource(sends.Select(send => send.CancellationToken).ToArray());
 

@@ -66,24 +66,24 @@ namespace Tmds.SockJS
             _webSocket.Abort();
         }
 
-        internal Task Open(CancellationToken cancellationToken)
+        internal Task OpenAsync(CancellationToken cancellationToken)
         {
             return _webSocket.SendAsync(new ArraySegment<byte>(s_openBuffer), WebSocketMessageType.Text, true, cancellationToken);
         }
 
         public async override Task CloseAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
-            await SendCloseBuffer(closeStatus, statusDescription, cancellationToken);
+            await SendCloseBufferAsync(closeStatus, statusDescription, cancellationToken);
             await _webSocket.CloseAsync(closeStatus, statusDescription, cancellationToken);
         }
 
         public async override Task CloseOutputAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
-            await SendCloseBuffer(closeStatus, statusDescription, cancellationToken);
+            await SendCloseBufferAsync(closeStatus, statusDescription, cancellationToken);
             await _webSocket.CloseOutputAsync(closeStatus, statusDescription, cancellationToken);
         }
 
-        private async Task SendCloseBuffer(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
+        private async Task SendCloseBufferAsync(WebSocketCloseStatus closeStatus, string statusDescription, CancellationToken cancellationToken)
         {
             var buffer = MessageWriter.CreateCloseBuffer(closeStatus, statusDescription);
             await _webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, buffer.Length - NewLine), WebSocketMessageType.Text, true, cancellationToken);
