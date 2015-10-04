@@ -9,8 +9,9 @@ namespace Tmds.SockJS
 {
     internal class SessionWebSocketFeature : IHttpWebSocketFeature
     {
-        private Session _session;
-        private TaskCompletionSource<bool> _acceptedTcs;
+        private readonly Session _session;
+        private readonly TaskCompletionSource<bool> _acceptedTcs;
+
         public SessionWebSocketFeature(TaskCompletionSource<bool> completionSource, Session session)
         {
             _session = session;

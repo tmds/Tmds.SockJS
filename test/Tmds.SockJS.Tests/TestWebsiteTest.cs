@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Cors.Core;
+﻿using Microsoft.AspNet.Cors.Core;
 using Microsoft.AspNet.TestHost;
-using Microsoft.Framework.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;

@@ -10,7 +10,7 @@ namespace Tmds.SockJS
 {
     internal class ReceiveMessageReader
     {
-        private Stream _body;
+        private readonly Stream _body;
 
         public ReceiveMessageReader(Stream body)
         {

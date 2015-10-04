@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
-using System.IO;
 using System.Threading.Tasks;
 using Tmds.WebSockets;
 

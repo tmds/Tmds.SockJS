@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Tmds.SockJS
 {
@@ -23,23 +21,23 @@ namespace Tmds.SockJS
         static MessageWriter()
         {
             s_controlEscape = new byte[LastControlByte + 1][];
-            s_controlEscape[(int)'\b'] = Encoding.UTF8.GetBytes("\\b");
-            s_controlEscape[(int)'\f'] = Encoding.UTF8.GetBytes("\\f");
-            s_controlEscape[(int)'\n'] = Encoding.UTF8.GetBytes("\\n");
-            s_controlEscape[(int)'\r'] = Encoding.UTF8.GetBytes("\\r");
-            s_controlEscape[(int)'\t'] = Encoding.UTF8.GetBytes("\\t");
+            s_controlEscape['\b'] = Encoding.UTF8.GetBytes("\\b");
+            s_controlEscape['\f'] = Encoding.UTF8.GetBytes("\\f");
+            s_controlEscape['\n'] = Encoding.UTF8.GetBytes("\\n");
+            s_controlEscape['\r'] = Encoding.UTF8.GetBytes("\\r");
+            s_controlEscape['\t'] = Encoding.UTF8.GetBytes("\\t");
             for (int i = 0; i <= LastControlByte; i++)
             {
                 if (s_controlEscape[i] == null)
                 {
-                    s_controlEscape[i] = Encoding.UTF8.GetBytes(string.Format("\\u00{0:x2}", i));
+                    s_controlEscape[i] = Encoding.UTF8.GetBytes($"\\u00{i:x2}");
                 }
             }
             s_htmlFileSendMessagesStart = Encoding.UTF8.GetBytes("<script>\np(");
             s_htmlFileSendMessagesEnd = Encoding.UTF8.GetBytes(");\n</script>\r\n");
         }
 
-        private MemoryStream _ms;
+        private readonly MemoryStream _ms;
 
         private MessageWriter()
         {
@@ -94,20 +92,18 @@ namespace Tmds.SockJS
                     {
                         break;
                     }
-                    if (escape)
+                    // escape
+                    if (b <= LastControlByte)
                     {
-                        if (b <= LastControlByte)
-                        {
-                            _ms.Write(s_controlEscape[b], 0, s_controlEscape[b].Length);
-                            copyOffset = offset;
-                            copyCount = 0;
-                        }
-                        else
-                        {
-                            _ms.WriteByte(ReverseSolidusByte);
-                            copyOffset = offset - 1;
-                            copyCount = 1;
-                        }
+                        _ms.Write(s_controlEscape[b], 0, s_controlEscape[b].Length);
+                        copyOffset = offset;
+                        copyCount = 0;
+                    }
+                    else
+                    {
+                        _ms.WriteByte(ReverseSolidusByte);
+                        copyOffset = offset - 1;
+                        copyCount = 1;
                     }
                 }
                 else

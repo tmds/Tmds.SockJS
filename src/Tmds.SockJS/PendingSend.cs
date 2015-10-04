@@ -11,58 +11,44 @@ namespace Tmds.SockJS
 {
     public class PendingSend
     {
+        private TaskCompletionSource<bool> _tcs;
+
         public WebSocketMessageType Type { get; private set; }
         public ArraySegment<byte> Buffer { get; private set; }
-        private TaskCompletionSource<bool> TaskCompletionSource { get; set; }
-        public Task CompleteTask { get { return TaskCompletionSource.Task; } }
+        public Task CompleteTask { get { return _tcs.Task; } }
         public CancellationToken CancellationToken { get; private set; }
 
         public PendingSend(TaskCompletionSource<bool> tcs, WebSocketMessageType type, ArraySegment<byte> buffer, CancellationToken cancellationToken)
         {
             Type = type;
-            TaskCompletionSource = tcs;
+            _tcs = tcs;
             Buffer = buffer;
             CancellationToken = cancellationToken;
         }
 
         public void CompleteCloseSent()
         {
-            if (TaskCompletionSource != null)
-            {
-                TaskCompletionSource.SetException(new InvalidOperationException("Session is not open"));
-            }
+            _tcs?.SetException(new InvalidOperationException("Session is not open"));
         }
 
         public void CompleteDisposed()
         {
-            if (TaskCompletionSource != null)
-            {
-                TaskCompletionSource.SetException(SessionWebSocket.NewDisposedException());
-            }
+            _tcs?.SetException(SessionWebSocket.NewDisposedException());
         }
 
         public void CompleteClientTimeout()
         {
-            if (TaskCompletionSource != null)
-            {
-                TaskCompletionSource.SetException(new IOException("Connection timed out"));
-            }
+            _tcs?.SetException(new IOException("Connection timed out"));
         }
 
         public void CompleteSuccess()
         {
-            if (TaskCompletionSource != null)
-            {
-                TaskCompletionSource.SetResult(true);
-            }
+            _tcs?.SetResult(true);
         }
 
         public void CompleteException(Exception e)
         {
-            if (TaskCompletionSource != null)
-            {
-                TaskCompletionSource.SetException(e);
-            }
+            _tcs?.SetException(e);
         }
     }
 }

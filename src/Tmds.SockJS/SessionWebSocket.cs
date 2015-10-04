@@ -10,7 +10,7 @@ namespace Tmds.SockJS
 {
     internal class SessionWebSocket : WebSocket
     {
-        private Session _session;
+        private readonly Session _session;
         private WebSocketState _state;
         private WebSocketCloseStatus? _closeStatus;
         private string _closeStatusDescription;

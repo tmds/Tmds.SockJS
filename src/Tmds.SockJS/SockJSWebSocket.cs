@@ -21,7 +21,7 @@ namespace Tmds.SockJS
             s_openBuffer = Encoding.UTF8.GetBytes("o");
         }
 
-        private WebSocket _webSocket;
+        private readonly WebSocket _webSocket;
         private List<JsonString> _receivedMessages;
 
         public SockJSWebSocket(WebSocket webSocket)

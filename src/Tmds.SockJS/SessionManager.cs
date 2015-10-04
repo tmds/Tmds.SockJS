@@ -230,7 +230,7 @@ namespace Tmds.SockJS
 
             context.Response.ContentType = "text/plain; charset=UTF-8";
             context.Response.StatusCode = StatusCodes.Status204NoContent;
-            await ExposeNothingAsync(context);
+            await ExposeNothingAsync();
         }
 
         private Task HandleXhrStreamingAsync(HttpContext context, string sessionId)
@@ -377,7 +377,7 @@ namespace Tmds.SockJS
             context.Response.Headers.Add(CorsConstants.AccessControlMaxAge, s_oneYearAccessControlMaxAge);
 
             context.Response.StatusCode = StatusCodes.Status204NoContent;
-            return ExposeNothingAsync(context);
+            return ExposeNothingAsync();
         }
 
         private Task HandleOptionsPostResourceAsync(HttpContext context, string session)
@@ -390,12 +390,12 @@ namespace Tmds.SockJS
             context.Response.Headers.Add(CorsConstants.AccessControlMaxAge, s_oneYearAccessControlMaxAge);
 
             context.Response.StatusCode = StatusCodes.Status204NoContent;
-            return ExposeNothingAsync(context);
+            return ExposeNothingAsync();
         }
 
-        private Task ExposeNothingAsync(HttpContext context)
+        private Task ExposeNothingAsync()
         {
-            return Task.FromResult<bool>(true);
+            return Task.FromResult(true);
         }
 
         private void AddSessionCookie(HttpContext context)
@@ -551,14 +551,14 @@ namespace Tmds.SockJS
         private Task HandleNotAllowedAsync(HttpContext context, string methods)
         {
             context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
-            context.Response.Headers.Add(HeaderNames.Allow, new string[] { methods });
-            return ExposeNothingAsync(context);
+            context.Response.Headers.Add(HeaderNames.Allow, new[] { methods });
+            return ExposeNothingAsync();
         }
 
         private Task HandleNotFoundAsync(HttpContext context)
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
-            return ExposeNothingAsync(context);
+            return ExposeNothingAsync();
         }
 
         private void AddNoCacheHeader(HttpContext context)

@@ -10,7 +10,7 @@ namespace Tmds.SockJS
 {
     internal class SockJSWebSocketFeature : IHttpWebSocketFeature
     {
-        private IHttpWebSocketFeature _feature;
+        private readonly IHttpWebSocketFeature _feature;
 
         public SockJSWebSocketFeature(IHttpWebSocketFeature httpWebSocketFeature)
         {

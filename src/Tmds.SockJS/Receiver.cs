@@ -54,12 +54,12 @@ namespace Tmds.SockJS
             Closed
         }
 
-        private HttpContext _context;
-        private ReceiverType _type;
+        private readonly HttpContext _context;
+        private readonly ReceiverType _type;
+        private readonly int _maxResponseLength;
+        private readonly string _htmlFileCallback;
         private int _bytesSent;
         private State _state;
-        private int _maxResponseLength;
-        private string _htmlFileCallback;
 
         public static byte[] CloseBuffer(WebSocketCloseStatus status, string description)
         {

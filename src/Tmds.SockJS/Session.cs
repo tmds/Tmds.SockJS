@@ -38,18 +38,18 @@ namespace Tmds.SockJS
         }
 
         private SessionWebSocket _socket;
-        private string _sessionId;
+        private readonly string _sessionId;
         private SessionManager _sessionManager;
         private Receiver _receiver;
-        private SockJSOptions _options;
-        private ReaderWriterLockSlim _clientLock;
+        private readonly SockJSOptions _options;
+        private readonly ReaderWriterLockSlim _clientLock;
         private CancellableTimer _timeoutTimer;
-        private ConcurrentQueue<PendingReceive> _receives;
-        private SemaphoreSlim _receivesSem;
-        private SemaphoreSlim _sendDequeueSem;
-        private SemaphoreSlim _sendsSem;
-        private SemaphoreSlim _sendEnqueueSem;
-        private ConcurrentQueue<PendingSend> _sends;
+        private readonly ConcurrentQueue<PendingReceive> _receives;
+        private readonly SemaphoreSlim _receivesSem;
+        private readonly SemaphoreSlim _sendDequeueSem;
+        private readonly SemaphoreSlim _sendsSem;
+        private readonly SemaphoreSlim _sendEnqueueSem;
+        private readonly ConcurrentQueue<PendingSend> _sends;
         private volatile byte[] _closeMessage;
         private volatile int _sendState;
         private volatile int _receiveState;
@@ -144,8 +144,7 @@ namespace Tmds.SockJS
                         }
                         else // WebSocketMessageType.Text
                         {
-                            messages = new List<PendingSend>();
-                            messages.Add(firstSend);
+                            messages = new List<PendingSend> {firstSend};
                             PendingSend nextSend;
                             int length = firstSend.Buffer.Count + _receiver.BytesSent;
                             while (_sends.TryPeek(out nextSend) && (nextSend.Type == WebSocketMessageType.Text))
