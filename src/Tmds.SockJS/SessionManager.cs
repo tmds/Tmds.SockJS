@@ -26,10 +26,8 @@ namespace Tmds.SockJS
         private static readonly string[] s_allowedXhrSendMediaTypes;
 
         private static readonly string[] s_noCacheCacheControlValue = new[] { "no-store, no-cache, must-revalidate, max-age=0" };
-        private static readonly string[] s_corsVaryValue = new[] { CorsConstants.Origin };
-        private static readonly string[] s_trueValue = new[] { "true" };
         private static readonly string[] s_oneYearCacheCacheControlValue = new[] { "public, max-age=31536000" };
-        private static readonly string[] s_oneYearAccessControlMaxAge = new[] { "31536000" };
+        private static readonly string s_oneYearAccessControlMaxAge = "31536000";
         private static readonly string[] s_optionsPostAllowedMethods = new[] { "OPTIONS, POST" };
         private static readonly string[] s_optionsGetAllowedMethods = new[] { "OPTIONS, GET" };
         private static readonly Random s_random = new Random();
@@ -135,8 +133,8 @@ namespace Tmds.SockJS
                 return ExposeTextAsync(context, "Not a valid websocket request");
             }
 
-            var feature = new SockJSWebSocketFeature(context.GetFeature<IHttpWebSocketFeature>());
-            context.SetFeature<IHttpWebSocketFeature>(feature);
+            var feature = new SockJSWebSocketFeature(context.Features.Get<IHttpWebSocketFeature>());
+            context.Features.Set<IHttpWebSocketFeature>(feature);
             context.Request.Path = _rewritePath;
 
             return _next(context);
@@ -176,7 +174,7 @@ namespace Tmds.SockJS
 
             var query = context.Request.Query;
 
-            var htmlFileCallback = query.Get("c") ?? query.Get("callback");
+            var htmlFileCallback = (string)query["c"] ?? (string)query["callback"];
 
             if (htmlFileCallback == null)
             {
@@ -298,7 +296,7 @@ namespace Tmds.SockJS
             {
                 TaskCompletionSource<bool> acceptCompletionSource = new TaskCompletionSource<bool>();
                 var feature = new SessionWebSocketFeature(acceptCompletionSource, session);
-                receiver.Context.SetFeature<IHttpWebSocketFeature>(feature);
+                receiver.Context.Features.Set<IHttpWebSocketFeature>(feature);
                 receiver.Context.Request.Path = _rewritePath;
 
                 var wsHandler = Task.Factory.StartNew(async () =>
@@ -402,8 +400,8 @@ namespace Tmds.SockJS
         {
             if (_options.SetJSessionIDCookie)
             {
-                var jsid = context.Request.Cookies["JSESSIONID"] ?? "dummy";
-                context.Response.Headers.Add(HeaderNames.SetCookie, new[] { "JSESSIONID=" + jsid + "; path=/" });
+                var jsid = (string)context.Request.Cookies["JSESSIONID"] ?? "dummy";
+                context.Response.Headers.Add(HeaderNames.SetCookie, "JSESSIONID=" + jsid + "; path=/");
             }
         }
 
@@ -427,20 +425,20 @@ namespace Tmds.SockJS
 
         private Task HandleIFrameAsync(HttpContext context, string session)
         {
-            if (_iframeETag.Equals(context.Request.Headers.Get(HeaderNames.IfNoneMatch)))
+            if (_iframeETag.Equals(context.Request.Headers[HeaderNames.IfNoneMatch]))
             {
                 context.Response.StatusCode = StatusCodes.Status304NotModified;
                 return Task.FromResult(true);
             }
             AddCachingHeader(context);
-            context.Response.Headers.Add(HeaderNames.ETag, new[] { _iframeETag });
+            context.Response.Headers.Add(HeaderNames.ETag, _iframeETag);
             return ExposeHtmlAsync(context, _iframeContent);
         }
 
         private void AddCachingHeader(HttpContext context)
         {
             context.Response.Headers.Add(HeaderNames.CacheControl, s_oneYearCacheCacheControlValue);
-            context.Response.Headers.Add(HeaderNames.Expires, new[] { DateTime.UtcNow.AddYears(1).ToString("R") });
+            context.Response.Headers.Add(HeaderNames.Expires, DateTime.UtcNow.AddYears(1).ToString("R"));
         }
 
         private Task ExposeHtmlAsync(HttpContext context, string content)
@@ -551,7 +549,7 @@ namespace Tmds.SockJS
         private Task HandleNotAllowedAsync(HttpContext context, string methods)
         {
             context.Response.StatusCode = StatusCodes.Status405MethodNotAllowed;
-            context.Response.Headers.Add(HeaderNames.Allow, new[] { methods });
+            context.Response.Headers.Add(HeaderNames.Allow, methods);
             return ExposeNothingAsync();
         }
 
@@ -570,18 +568,18 @@ namespace Tmds.SockJS
         {
             var request = context.Request;
             var response = context.Response;
-            var requestOrigin = request.Headers[CorsConstants.Origin];
+            var requestOrigin = (string)request.Headers[CorsConstants.Origin];
             if (requestOrigin != null)
             {
-                response.Headers.Add(CorsConstants.AccessControlAllowCredentials, s_trueValue);
+                response.Headers.Add(CorsConstants.AccessControlAllowCredentials, "true");
             }
             var origin = requestOrigin ?? CorsConstants.AnyOrigin;
-            response.Headers.Add(CorsConstants.AccessControlAllowOrigin, new[] { origin });
-            response.Headers.Add(HeaderNames.Vary, s_corsVaryValue);
+            response.Headers.Add(CorsConstants.AccessControlAllowOrigin, origin);
+            response.Headers.Add(HeaderNames.Vary, CorsConstants.Origin);
             var requestHeaders = request.Headers[CorsConstants.AccessControlRequestHeaders];
             if (!string.IsNullOrEmpty(requestHeaders))
             {
-                response.Headers.Add(CorsConstants.AccessControlAllowHeaders, new[] { requestHeaders });
+                response.Headers.Add(CorsConstants.AccessControlAllowHeaders, requestHeaders);
             }
         }
     }

@@ -1,5 +1,5 @@
 ﻿{
-    "version": "1.0.0-beta7-*",
+    "version": "1.0.0-beta8-*",
     "repository": {
         "type": "git",
         "url": "git://github.com/tmds/Tmds.SockJS"
@@ -16,13 +16,13 @@
         "dnx451": { },
         "dnxcore50": {
             "dependencies": {
-                "System.Collections": "4.0.10-beta-*",
+                "System.Collections": "4.0.11-beta-*",
                 "System.IO": "4.0.11-beta-*",
-                "System.Linq": "4.0.0-beta-*",
+                "System.Linq": "4.0.1-beta-*",
                 "System.Net.WebSockets": "4.0.0-beta-*",
-                "System.Runtime": "4.0.20-beta-*",
-                "System.Threading": "4.0.10-beta-*",
-                "Microsoft.CSharp": "4.0.0-beta-*"
+                "System.Runtime": "4.0.21-beta-*",
+                "System.Threading": "4.0.11-beta-*",
+                "Microsoft.CSharp": "4.0.1-beta-*"
             }
         }
     }
