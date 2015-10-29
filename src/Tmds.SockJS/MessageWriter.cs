@@ -119,7 +119,7 @@ namespace Tmds.SockJS
             WriteArrayStart();
             WriteInt((int)status);
             WriteArrayNext();
-            WriteJsonString(new ArraySegment<byte>(Encoding.UTF8.GetBytes(description)));
+            WriteJsonString(new ArraySegment<byte>(Encoding.UTF8.GetBytes(description ?? string.Empty)));
             WriteArrayEnd();
             WriteNewline();
         }

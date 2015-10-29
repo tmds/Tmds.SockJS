@@ -154,7 +154,7 @@ namespace Tmds.SockJS
                 }
                 catch
                 {
-                    await CloseAsync((WebSocketCloseStatus)3000, "Broken framing.", cancellationToken);
+                    Abort();
                     throw;
                 }
                 if (_receivedMessages.Count == 0)

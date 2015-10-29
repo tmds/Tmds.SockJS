@@ -24,8 +24,13 @@ Protocol.test_closeSession | ProtocolTest.CloseSession |
 WebsocketHttpErrors.test_httpMethod | WebSocketHttpErrorsTest.Method | 
 WebsocketHttpErrors.test_invalidConnectionHeader | WebSocketHttpErrorsTest.InvalidConnectionHeader | 
 WebsocketHttpErrors.test_invalidMethod | WebSocketHttpErrorsTest.InvalidMethod | 
-WebsocketHixie76.* | notimplemented | Not supported by ASP.NET stack
-WebsocketHybi10.* | notimplemented |  Not supported by ASP.NET stack
+WebsocketHixie76.test_transport | WebSocketHixie76Test.Transport | 
+WebsocketHixie76.test_close | WebSocketHixie76Test.Close | 
+WebsocketHixie76.test_empty_frame | WebSocketHixie76Test.EmptyFrame | 
+WebsocketHixie76.test_reuseSessionId | WebSocketHixie76Test.ReuseSessionId | 
+WebsocketHixie76.test_haproxy | notimplemented | (hixie-76) Not supported by ASP.NET stack
+WebsocketHixie76.test_broken_json | WebSocketHixie76Test.BrokenJson | 
+WebsocketHybi10.* | notimplemented |  (hybi-10) Not supported by ASP.NET stack
 XhrPolling.test_options | XhrPollingTest.Options | 
 XhrPolling.test_transport | XhrPollingTest.Transport | 
 XhrPolling.test_invalid_session | XhrPollingTest.InvalidSession | 
@@ -49,8 +54,8 @@ JsessionidCookie.test_xhr_streaming | JSessionIDCookieTest.XhrStreaming |
 JsessionidCookie.test_eventsource | notimplemented | 
 JsessionidCookie.test_htmlfile | JSessionIDCookieTest.HtmlFile | 
 JsessionidCookie.test_jsonp | notimplemented | 
-RawWebsocket.test_transport | | 
-RawWebsocket.test_close | | 
+RawWebsocket.test_transport | RawWebSocketTest.Transport | 
+RawWebsocket.test_close | RawWebSocketTest.Close | 
 JSONEncoding.test_xhr_server_encodes | JsonEncodingTest.ServerEncodes | 
 JSONEncoding.test_xhr_server_decodes | JsonEncodingTest.ServerDecodes | 
 HandlingClose.test_close_frame | HandlingCloseTest.CloseFrame | 

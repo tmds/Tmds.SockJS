@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 using TestWebSite;
 using Xunit;
@@ -24,6 +26,13 @@ namespace Tmds.SockJS.Tests
         {
             var server = new TestServer(TestServer.CreateBuilder().UseStartup<Startup>());
             return server.CreateClient();
+        }
+
+        protected Task<WebSocket> ConnectWebSocket(string url)
+        {
+            var server = new TestServer(TestServer.CreateBuilder().UseStartup<Startup>());
+            var client = server.CreateWebSocketClient();
+            return client.ConnectAsync(new Uri(url), CancellationToken.None);
         }
 
         protected void AssertNoCookie(HttpResponseMessage response)
