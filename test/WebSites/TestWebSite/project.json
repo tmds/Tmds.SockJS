@@ -2,11 +2,11 @@
     "webroot": "wwwroot",
     "dependencies": {
         "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
-        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta7",
         "Microsoft.AspNet.Server.WebListener": "1.0.0-beta8",
-        "Tmds.SockJS": "1.0.0-*",
+        "Tmds.SockJS": "1.0.0-beta8",
         "Microsoft.AspNet.WebSockets.Server": "1.0.0-beta8",
-        "Tmds.WebSockets.Sources": "1.0.0-*",
+        "Tmds.WebSockets.Sources": "1.0.0-beta8",
         "Microsoft.Framework.DependencyInjection": "1.0.0-beta8"
     },
     "commands": {

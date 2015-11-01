@@ -4,7 +4,7 @@
     "dependencies": {
         "xunit.runner.aspnet": "2.0.0-aspnet-beta8",
         "Microsoft.AspNet.TestHost": "1.0.0-beta8",
-        "TestWebSite": "1.0.0-*",
+        "TestWebSite": "1.0.0",
         "Microsoft.AspNet.WebSockets.Protocol": "1.0.0-beta8"
     },
     "commands": {
