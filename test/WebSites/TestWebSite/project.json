@@ -6,7 +6,8 @@
         "Microsoft.AspNet.Server.WebListener": "1.0.0-beta8",
         "Tmds.SockJS": "1.0.0-*",
         "Microsoft.AspNet.WebSockets.Server": "1.0.0-beta8",
-        "Tmds.WebSockets.Sources": "1.0.0-*"
+        "Tmds.WebSockets.Sources": "1.0.0-*",
+        "Microsoft.Framework.DependencyInjection": "1.0.0-beta8"
     },
     "commands": {
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
