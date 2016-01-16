@@ -41,7 +41,7 @@ namespace Tmds.WebSockets
                 ms.Write(buffer, 0, result.Count);
             }
             var outputSegment = new ArraySegment<byte>();
-#if DNXCORE50
+#if DOTNET5_4
             ms.TryGetBuffer(out outputSegment);
 #else
             outputSegment = new ArraySegment<byte>(ms.GetBuffer(), 0, (int)ms.Length);
@@ -80,7 +80,7 @@ namespace Tmds.WebSockets
                 ms.Write(buffer, 0, result.Count);
             }
             var outputSegment = new ArraySegment<byte>();
-#if DNXCORE50
+#if DOTNET5_4
             ms.TryGetBuffer(out outputSegment);
 #else
             outputSegment = new ArraySegment<byte>(ms.GetBuffer(), 0, (int)ms.Length);

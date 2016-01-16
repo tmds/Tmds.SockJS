@@ -1,21 +1,20 @@
 ﻿// Copyright (C) 2015 Tom Deseyn. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
 using System;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.WebSockets;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Net.Http.Headers;
-using Microsoft.AspNet.Cors.Core;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using Microsoft.AspNet.Http.Features;
-using System.Collections.Concurrent;
-using System.Threading;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Cors.Infrastructure;
+using Microsoft.AspNet.Http;using Microsoft.AspNet.Http.Features;
+using Microsoft.Net.Http.Headers;
 
 namespace Tmds.SockJS
 {

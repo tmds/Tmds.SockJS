@@ -25,7 +25,7 @@ namespace Tmds.SockJS.Tests
                     int length = messages[i].Decode(new ArraySegment<byte>(buffer, 0, buffer.Length));
                     decodedStream.Write(buffer, 0, length);
                 } while (!messages[i].IsEmpty);
-#if DNXCORE50
+#if DOTNET5_4
                 ArraySegment<byte> streamBuffer;
                 decodedStream.TryGetBuffer(out streamBuffer);
 #else

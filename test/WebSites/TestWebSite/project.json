@@ -1,13 +1,12 @@
 {
     "webroot": "wwwroot",
     "dependencies": {
-        "Microsoft.AspNet.Server.Kestrel": "1.0.0-beta8",
-        "Microsoft.AspNet.Server.IIS": "1.0.0-beta7",
-        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta8",
-        "Tmds.SockJS": "1.0.0-beta8",
-        "Microsoft.AspNet.WebSockets.Server": "1.0.0-beta8",
-        "Tmds.WebSockets.Sources": "1.0.0-beta8",
-        "Microsoft.Framework.DependencyInjection": "1.0.0-beta8"
+        "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-rc1-final",
+        "Tmds.SockJS": "1.0.0-rc1-final",
+        "Microsoft.AspNet.WebSockets.Server": "1.0.0-rc1-final",
+        "Tmds.WebSockets.Sources": "1.0.0-rc1-final",
+        "Microsoft.Extensions.DependencyInjection": "1.0.0-rc1-final"
     },
     "commands": {
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5000",
@@ -15,7 +14,7 @@
     },
     "frameworks": {
         "dnx451": { },
-        "dnxcore50": { }
+        "dotnet5.4": { }
     },
     "publishExclude": [
         "node_modules",

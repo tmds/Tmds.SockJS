@@ -1,5 +1,5 @@
 ﻿{
-    "version": "1.0.0-beta8",
+    "version": "1.0.0-rc1-final",
     "repository": {
         "type": "git",
         "url": "git://github.com/tmds/Tmds.SockJS"
@@ -12,10 +12,10 @@
     "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
     "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
     "dependencies": {
-        "Microsoft.AspNet.Http.Abstractions": "1.0.0-beta8"
+        "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final"
     },
     "frameworks": {
         "dnx451": { },
-        "dnxcore50": { }
+        "dotnet5.4": { }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNet.Cors.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Cors.Infrastructure;
 using Xunit;
 
 namespace Tmds.SockJS.Tests

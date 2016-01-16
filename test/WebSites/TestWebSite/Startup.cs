@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.AspNet.Builder;
-using Microsoft.Framework.DependencyInjection;
+using Microsoft.AspNet.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Tmds.SockJS;
 
 namespace TestWebSite
@@ -14,7 +16,7 @@ namespace TestWebSite
         {
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             app.UseWebSockets();
             app.UseBroadcast("/broadcast");
@@ -25,5 +27,7 @@ namespace TestWebSite
             app.UseTicker("/ticker");
             app.UseAmplify("/amplify");
         }
+
+        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }

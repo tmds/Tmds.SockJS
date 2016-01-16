@@ -156,7 +156,7 @@ namespace Tmds.SockJS
         }
         private ArraySegment<byte> GetSegment()
         {
-#if DNXCORE50
+#if DOTNET5_4
             ArraySegment<byte> segment;
             _ms.TryGetBuffer(out segment);
             return segment;
