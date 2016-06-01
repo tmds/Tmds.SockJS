@@ -1,21 +1,29 @@
 ﻿{
-    "version": "1.0.0-rc1-final",
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/tmds/Tmds.SockJS"
-    },
-    "title": "Tmds.WebSockets.Sources",
+  "version": "1.0.0-rc1-final",
+  "packOptions": {
     "tags": [ "websocket" ],
-    "description": "WebSocket Extensions",
-    "shared": "*.cs",
-    "authors": [ "Tom Deseyn" ],
-    "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
     "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
-    "dependencies": {
-        "Microsoft.AspNet.Http.Abstractions": "1.0.0-rc1-final"
-    },
-    "frameworks": {
-        "dnx451": { },
-        "dotnet5.4": { }
+    "licenseUrl": "https://github.com/tmds/Tmds.SockJS/blob/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/tmds/Tmds.SockJS"
     }
+  },
+  "title": "Tmds.WebSockets.Sources",
+  "description": "WebSocket Extensions",
+  "shared": "*.cs",
+  "authors": [ "Tom Deseyn" ],
+  "dependencies": {
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-final"
+  },
+  "frameworks": {
+    "net451": { },
+    "netcoreapp1.0": {
+      "imports": [
+        "dotnet5.6",
+        "dnxcore50",
+        "portable-net45+win8"
+      ]
+    }
+  }
 }

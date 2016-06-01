@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Http;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Tmds.WebSockets;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace TestWebSite
 {

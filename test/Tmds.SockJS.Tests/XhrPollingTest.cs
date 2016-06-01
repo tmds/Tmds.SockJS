@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Cors.Infrastructure;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Xunit;
 
 namespace Tmds.SockJS.Tests

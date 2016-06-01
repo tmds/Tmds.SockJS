@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.AspNet.WebSockets.Protocol;
+using Microsoft.AspNetCore.WebSockets.Protocol;
 
 namespace Tmds.SockJS.Tests
 {
