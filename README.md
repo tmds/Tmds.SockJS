@@ -34,8 +34,8 @@ This example implements an 'echo' websocket service. The SockJS endpoint for the
 In *project.json* add Tmds.SockJS and Tmds.WebSockets.Sources to the dependencies:
 ```JSON
 	"dependencies": {
-		"Tmds.SockJS": "1.0.0-rc1-final",
-		"Tmds.WebSockets.Sources": "1.0.0-rc1-final",
+		"Tmds.SockJS": "1.0.0-rc2",
+		"Tmds.WebSockets.Sources": "1.0.0-rc2",
 	},
 ```
 

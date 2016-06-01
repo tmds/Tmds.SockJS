@@ -30,8 +30,8 @@
       "version": "1.0.0-preview1-final",
       "type": "build"
     },
-    "Tmds.SockJS": "1.0.0-rc1-final",
-    "Tmds.WebSockets.Sources": "1.0.0-rc1-final"
+    "Tmds.SockJS": "1.0.0-rc2",
+    "Tmds.WebSockets.Sources": "1.0.0-rc2"
   },
   "tools": {
     "Microsoft.AspNetCore.Razor.Tools": {
