@@ -19,10 +19,6 @@ namespace TestWebSite
 
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
             app.UseWebSockets();
             app.UseBroadcast("/broadcast");
             app.UseEcho("/echo", new SockJSOptions() { MaxResponseLength = 4096 });
