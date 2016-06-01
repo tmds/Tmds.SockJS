@@ -55,7 +55,20 @@
     }
   },
   "frameworks": {
-    "net451": { }
+    "net451": { },
+    "netcoreapp1.0": {
+      "dependencies": {
+        "dotnet-test-xunit": "1.0.0-rc2-build10025",
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0-rc2-3002702"
+        }
+      },
+      "imports": [
+        "dnxcore50",
+        "portable-net451+win8"
+      ]
+    }
   },
   "buildOptions": {
     "emitEntryPoint": true,

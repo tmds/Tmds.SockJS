@@ -156,12 +156,12 @@ namespace Tmds.SockJS
         }
         private ArraySegment<byte> GetSegment()
         {
-#if NETCOREAPP1_0
+#if NET451
+            return new ArraySegment<byte>(_ms.GetBuffer(), 0, (int)_ms.Length);
+#else
             ArraySegment<byte> segment;
             _ms.TryGetBuffer(out segment);
             return segment;
-#else
-            return new ArraySegment<byte>(_ms.GetBuffer(), 0, (int)_ms.Length);
 #endif
         }
 

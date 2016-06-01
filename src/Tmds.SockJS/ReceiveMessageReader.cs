@@ -23,12 +23,12 @@ namespace Tmds.SockJS
             using (var memoryStream = new MemoryStream())
             {
                 await _body.CopyToAsync(memoryStream);
-#if NETCOREAPP1_0
+#if NET451
+                var buffer = memoryStream.GetBuffer();
+#else
                 ArraySegment<byte> segment;
                 memoryStream.TryGetBuffer(out segment);
                 var buffer = segment.Array;
-#else
-                var buffer = memoryStream.GetBuffer();
 #endif
                 if (buffer.Length == 0)
                 {

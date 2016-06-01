@@ -41,10 +41,10 @@ namespace Tmds.WebSockets
                 ms.Write(buffer, 0, result.Count);
             }
             var outputSegment = new ArraySegment<byte>();
-#if NETCOREAPP1_0
-            ms.TryGetBuffer(out outputSegment);
-#else
+#if NET451
             outputSegment = new ArraySegment<byte>(ms.GetBuffer(), 0, (int)ms.Length);
+#else
+            ms.TryGetBuffer(out outputSegment);
 #endif
             return Encoding.UTF8.GetString(outputSegment.Array, outputSegment.Offset, outputSegment.Count);
         }
@@ -80,10 +80,10 @@ namespace Tmds.WebSockets
                 ms.Write(buffer, 0, result.Count);
             }
             var outputSegment = new ArraySegment<byte>();
-#if NETCOREAPP1_0
-            ms.TryGetBuffer(out outputSegment);
-#else
+#if NET451
             outputSegment = new ArraySegment<byte>(ms.GetBuffer(), 0, (int)ms.Length);
+#else
+            ms.TryGetBuffer(out outputSegment);
 #endif
             return outputSegment;
         }

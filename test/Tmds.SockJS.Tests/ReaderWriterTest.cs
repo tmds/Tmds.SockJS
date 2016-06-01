@@ -25,11 +25,11 @@ namespace Tmds.SockJS.Tests
                     int length = messages[i].Decode(new ArraySegment<byte>(buffer, 0, buffer.Length));
                     decodedStream.Write(buffer, 0, length);
                 } while (!messages[i].IsEmpty);
-#if DOTNET5_4
+#if NET451
+                ArraySegment<byte> streamBuffer = new ArraySegment<byte>(decodedStream.GetBuffer(), 0, (int)decodedStream.Length);
+#else
                 ArraySegment<byte> streamBuffer;
                 decodedStream.TryGetBuffer(out streamBuffer);
-#else
-                ArraySegment<byte> streamBuffer = new ArraySegment<byte>(decodedStream.GetBuffer(), 0, (int)decodedStream.Length);
 #endif
                 var s = Encoding.UTF8.GetString(streamBuffer.Array, streamBuffer.Offset, streamBuffer.Count);
                 Assert.Equal(expected[i], s);
