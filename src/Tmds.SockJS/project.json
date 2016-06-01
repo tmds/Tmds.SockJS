@@ -18,7 +18,9 @@
   },
   "frameworks": {
     "net451": {
-
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.10.0"
+      }
     },
     "netcoreapp1.0": {
       "imports": [
