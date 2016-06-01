@@ -6,11 +6,12 @@ using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Cors.Infrastructure;
-using Microsoft.AspNet.TestHost;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Net.Http.Headers;
 using TestWebSite;
 using Xunit;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Tmds.SockJS.Tests
 {
@@ -24,15 +25,21 @@ namespace Tmds.SockJS.Tests
 
         protected HttpClient CreateClient()
         {
-            var server = new TestServer(TestServer.CreateBuilder().UseStartup<Startup>());
+            var server = GetServer();
             return server.CreateClient();
         }
 
         protected Task<WebSocket> ConnectWebSocket(string url)
         {
-            var server = new TestServer(TestServer.CreateBuilder().UseStartup<Startup>());
+            var server = GetServer();
             var client = server.CreateWebSocketClient();
             return client.ConnectAsync(new Uri(url), CancellationToken.None);
+        }
+
+        internal static TestServer GetServer()
+        {
+            var webHostBuilder = new WebHostBuilder().UseStartup(typeof(Startup));
+            return new TestServer(webHostBuilder);
         }
 
         protected void AssertNoCookie(HttpResponseMessage response)

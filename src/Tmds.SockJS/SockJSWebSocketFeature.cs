@@ -3,8 +3,9 @@
 
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http.Features;
 using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Tmds.SockJS
 {

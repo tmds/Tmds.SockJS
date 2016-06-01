@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNet.TestHost;
 using Xunit;
 using TestWebSite;
+using Microsoft.AspNetCore.TestHost;
 
 namespace Tmds.SockJS.Tests
 {
@@ -85,7 +84,7 @@ namespace Tmds.SockJS.Tests
         public async Task ReuseSessionId()
         {
             string url = BaseUrl + "/000/" + Guid.NewGuid().ToString() + "/websocket";
-            var server = new TestServer(TestServer.CreateBuilder().UseStartup<Startup>());
+            var server = TestWebsiteTest.GetServer();
             var client = server.CreateWebSocketClient();
             var webSocket1 = await client.ConnectAsync(new Uri(url), CancellationToken.None);
             var webSocket2 = await client.ConnectAsync(new Uri(url), CancellationToken.None);

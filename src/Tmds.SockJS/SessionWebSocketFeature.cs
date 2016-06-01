@@ -1,9 +1,10 @@
 ﻿// Copyright (C) 2015 Tom Deseyn. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using Microsoft.AspNet.Http.Features;
 using System.Threading.Tasks;
 using System.Net.WebSockets;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Tmds.SockJS
 {

@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.Http;
 using System.Threading;
 using System.Text;
 using System.Net.WebSockets;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace Tmds.SockJS
 {

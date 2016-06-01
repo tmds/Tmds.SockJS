@@ -1,15 +1,16 @@
 ﻿using System;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Tmds.SockJS;
+using Microsoft.AspNetCore.Builder;
 
 namespace TestWebSite
 {
     public class Startup
     {
         public static readonly TimeSpan CloseDisconnectTimeout = TimeSpan.FromSeconds(2);
+
+        public static object WebApplication { get; private set; }
 
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -27,7 +28,5 @@ namespace TestWebSite
             app.UseTicker("/ticker");
             app.UseAmplify("/amplify");
         }
-
-        public static void Main(string[] args) => WebApplication.Run<Startup>(args);
     }
 }
