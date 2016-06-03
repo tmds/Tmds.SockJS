@@ -10,7 +10,7 @@
       "url": "git://github.com/tmds/Tmds.SockJS"
     }
   },
-  "description": "SockJS websocket emulation for ASP.NET 5",
+  "description": "SockJS websocket emulation for ASP.NET Core",
   "authors": [ "Tom Deseyn" ],
   "dependencies": {
     "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-final",
