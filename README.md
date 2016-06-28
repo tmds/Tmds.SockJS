@@ -10,7 +10,7 @@ AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/kpmtd98p5p4x1
 From: https://github.com/sockjs/sockjs-client 
 > SockJS is a browser JavaScript library that provides a WebSocket-like object. SockJS gives you a coherent, cross-browser, Javascript API which creates a low latency, full duplex, cross-domain communication channel between the browser and the web server.
 
-Tmds.SockJS enables SockJS on ASP.NET5. It can be installed added as a middleware and requires no change to the WebSocket implementation. For example, if the server provides an standard websocket endpoint at '/websocket', a SockJS endpoint can be added at '/sockjs' with this one-liner:
+Tmds.SockJS enables SockJS on ASP.NET Core. It can be installed added as a middleware and requires no change to the WebSocket implementation. For example, if the server provides an standard websocket endpoint at '/websocket', a SockJS endpoint can be added at '/sockjs' with this one-liner:
 ```C#
 app.UseSockJS("/sockjs", new SockJSOptions() { RewritePath = "/websocket" });
 ```
@@ -34,8 +34,8 @@ This example implements an 'echo' websocket service. The SockJS endpoint for the
 In *project.json* add Tmds.SockJS and Tmds.WebSockets.Sources to the dependencies:
 ```JSON
 	"dependencies": {
-		"Tmds.SockJS": "1.0.0-rc2",
-		"Tmds.WebSockets.Sources": "1.0.0-rc2",
+		"Tmds.SockJS": "1.0.0",
+		"Tmds.WebSockets.Sources": "1.0.0",
 	},
 ```
 

@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "packOptions": {
     "tags": [ "websocket" ],
     "projectUrl": "https://github.com/tmds/Tmds.SockJS/",
@@ -14,7 +14,7 @@
   "shared": "*.cs",
   "authors": [ "Tom Deseyn" ],
   "dependencies": {
-    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0-rc2-final"
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0"
   },
   "frameworks": {
     "net451": { },
