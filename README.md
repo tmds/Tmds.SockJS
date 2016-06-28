@@ -1,5 +1,5 @@
 # Tmds.SockJS
-Tmds.SockJS is an ASP.NET 5 implementation of the SockJS protocol. The library maintains the standard ASP.NET WebSocket interface even when websockets are emulated.
+Tmds.SockJS is an ASP.NET Core implementation of the SockJS protocol. The library maintains the standard ASP.NET WebSocket interface even when websockets are emulated.
 
 AppVeyor: [![AppVeyor](https://ci.appveyor.com/api/projects/status/kpmtd98p5p4x1bd0?svg=true)](https://ci.appveyor.com/project/tmds/tmds-sockjs/branch/master)
 
@@ -34,8 +34,8 @@ This example implements an 'echo' websocket service. The SockJS endpoint for the
 In *project.json* add Tmds.SockJS and Tmds.WebSockets.Sources to the dependencies:
 ```JSON
 	"dependencies": {
-		"Tmds.SockJS": "1.0.0-rc1-final",
-		"Tmds.WebSockets.Sources": "1.0.0-rc1-final",
+		"Tmds.SockJS": "1.0.0-rc2",
+		"Tmds.WebSockets.Sources": "1.0.0-rc2",
 	},
 ```
 

@@ -6,4 +6,4 @@ clone_depth: 1
 test: off
 deploy: off
 artifacts:
-  - path: src\Tmds.SockJS\bin\$(Configuration)\*.nupkg
+  - path: src\**\bin\$(Configuration)\*.nupkg
