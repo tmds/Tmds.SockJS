@@ -21,7 +21,7 @@
     "netstandard1.3": {
       "dependencies": {
         "System.Collections.Concurrent": "4.0.12",
-        "System.Text.RegularExpressions": "4.0.12-rc2-24027",
+        "System.Text.RegularExpressions": "4.1.0",
         "System.Threading.Timer": "4.0.1"
       }
     }
